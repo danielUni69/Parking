@@ -32,8 +32,4 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
     </php>
-    <php>
-        <env name="FEATURES_REGISTRATION" value="false"/>
-    </php>
-
 </phpunit>
