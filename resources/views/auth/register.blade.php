@@ -1,60 +1,47 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro</title>
+</head>
+<body>
 
-        <x-validation-errors class="mb-4" />
+<h2>Registrar Usuario</h2>
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+@if ($errors->any())
+    <ul style="color:red">
+        @foreach ($errors->all() as $err)
+            <li>{{ $err }}</li>
+        @endforeach
+    </ul>
+@endif
 
-            <div>
-                <x-label for="name" value="{{ __('Name') }}" />
-                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            </div>
+<form method="POST" action="{{ route('register.post') }}">
+    @csrf
 
-            <div class="mt-4">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            </div>
+    <label>Nombre:</label><br>
+    <input type="text" name="name" required><br><br>
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            </div>
+    <label>Email:</label><br>
+    <input type="email" name="email" required><br><br>
 
-            <div class="mt-4">
-                <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
+    <label>Contraseña:</label><br>
+    <input type="password" name="password" required><br><br>
 
-            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="mt-4">
-                    <x-label for="terms">
-                        <div class="flex items-center">
-                            <x-checkbox name="terms" id="terms" required />
+    <label>Repetir contraseña:</label><br>
+    <input type="password" name="password_confirmation" required><br><br>
 
-                            <div class="ms-2">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Privacy Policy').'</a>',
-                                ]) !!}
-                            </div>
-                        </div>
-                    </x-label>
-                </div>
-            @endif
+    <label>Tipo Usuario:</label><br>
+    <select name="tipo_usuario_id" required>
+        @foreach ($tipos as $t)
+            <option value="{{ $t->id }}">{{ $t->tipo }}</option>
+        @endforeach
+    </select><br><br>
 
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
+    <button type="submit">Registrarse</button>
+</form>
 
-                <x-button class="ms-4">
-                    {{ __('Register') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+<br>
+<a href="{{ route('login') }}">Volver al login</a>
+
+</body>
+</html>

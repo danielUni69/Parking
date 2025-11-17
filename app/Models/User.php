@@ -29,6 +29,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'tipo_usuario_id',
     ];
 
     /**
@@ -64,4 +65,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function tipo()
+    {
+        return $this->belongsTo(TipoUsario::class, 'tipo_usuario_id');
+    }
+
 }
