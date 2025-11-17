@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create("pago", function (Blueprint $table) {
             $table->id();
-            $table->$table->decimal("monto", 10, 2);
+            $table->decimal("monto", 10, 2);
             $table->dateTime("fecha");
             $table
                 ->foreignId("ticket_id")
