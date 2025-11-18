@@ -9,20 +9,11 @@
     <span>Inicio</span>
 @endsection
 
-@section('page-actions')
-    <button class="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition">
-        <i class="fas fa-sync-alt mr-2"></i>Actualizar
-    </button>
-    <button class="px-4 py-2 gold-gradient text-black font-semibold rounded-lg hover:shadow-lg transition">
-        <i class="fas fa-plus mr-2"></i>Nuevo Ingreso
-    </button>
-@endsection
-
 @section('content')
     <!-- Welcome Section -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-white">Bienvenido al Sistema</h1>
-        <p class="text-gray-400 mt-2">Gestión completa del estacionamiento Potosí - {{ now()->format('d/m/Y H:i') }}</p>
+        <p class="text-gray-400 mt-2">Gestión completa del estacionamiento Jemita - {{ now()->format('d/m/Y H:i') }}</p>
     </div>
 
     <!-- Stats Grid -->

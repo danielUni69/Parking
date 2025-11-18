@@ -225,18 +225,12 @@
 
                 <!-- Page Actions -->
                 <div class="px-6 py-3 bg-gray-750 border-t border-gray-700" id="page-actions-container">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-center">
                         <div class="flex items-center space-x-2" id="page-actions-left">
                             @hasSection('page-actions')
                                 @yield('page-actions')
                             @else
-                                <!-- Default actions -->
-                                <button class="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition text-sm" onclick="refreshData()">
-                                    <i class="fas fa-sync-alt mr-2"></i>Actualizar
-                                </button>
-                                <button class="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition text-sm" onclick="exportData()">
-                                    <i class="fas fa-download mr-2"></i>Exportar
-                                </button>
+                                <livewire:pisos-list />
                             @endif
                         </div>
                         <div class="flex items-center space-x-2" id="page-actions-right">
