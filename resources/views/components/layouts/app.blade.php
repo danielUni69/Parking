@@ -70,14 +70,6 @@
 
                 <!-- User Menu -->
                 <div class="flex items-center space-x-4">
-                    <!-- Notifications -->
-                    <div class="relative">
-                        <button class="p-2 text-gray-400 hover:text-yellow-500 transition">
-                            <i class="fas fa-bell"></i>
-                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-                    </div>
-
                     @auth
                     <!-- User Profile -->
                     <div class="dropdown relative">
@@ -97,11 +89,8 @@
                                 <p class="text-sm text-white font-medium">{{ Auth::user()->name ?? 'Admin User' }}</p>
                                 <p class="text-xs text-gray-400">{{ Auth::user()->email ?? 'admin@example.com' }}</p>
                             </div>
-                            <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
+                            <a href="{{ route('profile') }}" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
                                 <i class="fas fa-user-cog mr-2 w-4"></i> Perfil
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
-                                <i class="fas fa-cog mr-2 w-4"></i> Configuración
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

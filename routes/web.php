@@ -26,4 +26,5 @@ Route::middleware(["auth"])->group(function () {
     Route::get("/dashboard", Dashboard::class)->name("dashboard");
     Route::get("/parking", EspaciosList::class)->name("parking");
     Route::get('/users', \App\Livewire\Users::class)->name('users');
+    Route::get('/profile', \App\Livewire\Profile::class)->name('profile');
 });
