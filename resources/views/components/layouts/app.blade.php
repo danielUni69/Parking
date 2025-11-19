@@ -121,24 +121,6 @@
                         </a>
 
                         <!-- Pagos y Facturación -->
-                        <div class="dropdown relative">
-                            <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
-                                <i class="fas fa-credit-card w-4 text-yellow-500"></i>
-                                <span class="text-sm">Pagos</span>
-                                <i class="fas fa-chevron-down text-xs ml-1"></i>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
-                                    <i class="fas fa-receipt mr-2 w-4"></i> Facturación
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
-                                    <i class="fas fa-history mr-2 w-4"></i> Historial de Pagos
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
-                                    <i class="fas fa-chart-line mr-2 w-4"></i> Reportes Financieros
-                                </a>
-                            </div>
-                        </div>
 
                         <!-- Reportes -->
                         <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
