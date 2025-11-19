@@ -69,12 +69,14 @@ class Users extends Component
 
     public function saveUser()
     {
-        $this->validate([
+        $rules = [
             'name' => 'required|min:3',
-            'email' => 'required|email|unique:users,email,' . $this->userId,
+            'email' => 'required|email|unique:users,email' . ($this->userId ? ',' . $this->userId : ''),
             'password' => $this->userId ? 'nullable|min:6' : 'required|min:6',
             'tipo_usuario_id' => 'required|exists:tipo_usuario,id',
-        ]);
+        ];
+
+        $this->validate($rules);
 
         if ($this->userId) {
             $user = User::find($this->userId);
@@ -98,6 +100,7 @@ class Users extends Component
         $this->confirmingUserEdition = false;
         session()->flash('message', $this->userId ? 'Usuario actualizado correctamente.' : 'Usuario creado correctamente.');
     }
+
 
     public function deleteUser()
     {
