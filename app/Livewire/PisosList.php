@@ -13,6 +13,9 @@ class PisosList extends Component
     public function mount()
     {
         $this->pisos = Piso::orderBy("numero")->get();
+        if (!$this->pisoSeleccionado) {
+            $this->pisoSeleccionado = Piso::first()?->id;
+        }
     }
 
     public function seleccionarPiso($pisoId)

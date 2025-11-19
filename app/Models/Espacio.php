@@ -24,4 +24,8 @@ class Espacio extends Model
     {
         return $this->hasMany(Ticket::class, "espacio_id");
     }
+    public function ticketActivo()
+    {
+        return $this->hasOne(Ticket::class)->where("estado", "activo");
+    }
 }

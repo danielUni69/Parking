@@ -7,6 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/heropatterns/1.0.0/heropatterns.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Solo necesitas esta línea para Heroicons (outline) -->
+    <script src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/dist/heroicons.min.js"></script>
     <style>
         .gold-gradient {
             background: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #FFEC8B 100%);
@@ -95,41 +100,11 @@
                             <span class="text-sm">Dashboard</span>
                         </a>
 
-                        <!-- Gestión de Vehículos -->
-                        <div class="dropdown relative">
-                            <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg vehiculos-link">
-                                <i class="fas fa-car w-4 text-yellow-500"></i>
-                                <span class="text-sm">Vehículos</span>
-                                <i class="fas fa-chevron-down text-xs ml-1"></i>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
-                                    <i class="fas fa-list mr-2 w-4"></i>
-                                    Lista de Vehículos
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
-                                    <i class="fas fa-plus mr-2 w-4"></i>
-                                    Nuevo Ingreso
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
-                                    <i class="fas fa-sign-out-alt mr-2 w-4"></i>
-                                    Registrar Salida
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Espacios de Parking -->
+                                                <!-- Espacios de Parking -->
                         <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg espacios-link">
                             <i class="fas fa-parking w-4 text-yellow-500"></i>
                             <span class="text-sm">Parking</span>
                         </a>
-
-                        <!-- Reservas -->
-                        <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg reservas-link">
-                            <i class="fas fa-calendar-check w-4 text-yellow-500"></i>
-                            <span class="text-sm">Reservas</span>
-                        </a>
-
                         <!-- Pagos y Facturación -->
                         <div class="dropdown relative">
                             <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg pagos-link">
@@ -165,11 +140,6 @@
                             <span class="text-sm">Usuarios</span>
                         </a>
 
-                        <!-- Configuración -->
-                        <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg configuracion-link">
-                            <i class="fas fa-cog w-4 text-yellow-500"></i>
-                            <span class="text-sm">Configuración</span>
-                        </a>
                     </div>
                 </div>
             </nav>
@@ -245,7 +215,8 @@
 
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto bg-gray-900 p-6">
-            @yield('content')
+           @yield('content')
+           {{-- {{ $slot }} --}}
         </main>
     </div>
 
@@ -253,248 +224,6 @@
     <div class="fixed top-10 left-10 opacity-5 text-8xl">🦙</div>
     <div class="fixed bottom-10 right-10 opacity-5 text-8xl">🦙</div>
 
-    <script>
-        // Navigation Management
-        class NavigationManager {
-            constructor() {
-                this.currentSection = 'dashboard';
-                this.init();
-            }
-
-            init() {
-                this.setupEventListeners();
-                this.loadSection(this.currentSection);
-                this.setActiveNavItem('dashboard');
-            }
-
-            setupEventListeners() {
-                // Main navigation
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const section = this.getSectionFromElement(item);
-                        this.navigateTo(section);
-                    });
-                });
-
-                // Search functionality
-                document.getElementById('global-search').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.handleSearch(e.target.value);
-                    }
-                });
-
-                // Quick actions
-                document.querySelectorAll('#quick-actions button').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        this.handleQuickAction(button.textContent.trim());
-                    });
-                });
-            }
-
-            getSectionFromElement(element) {
-                if (element.classList.contains('dashboard-link')) return 'dashboard';
-                if (element.classList.contains('vehiculos-link')) return 'vehiculos';
-                if (element.classList.contains('espacios-link')) return 'espacios';
-                if (element.classList.contains('reservas-link')) return 'reservas';
-                if (element.classList.contains('pagos-link')) return 'pagos';
-                if (element.classList.contains('reportes-link')) return 'reportes';
-                if (element.classList.contains('usuarios-link')) return 'usuarios';
-                if (element.classList.contains('configuracion-link')) return 'configuracion';
-                return 'dashboard';
-            }
-
-            setActiveNavItem(section) {
-                // Remove active class from all items
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-
-                // Add active class to current section
-                const activeLink = document.querySelector(`.${section}-link`);
-                if (activeLink) {
-                    activeLink.classList.add('active');
-                }
-            }
-
-            navigateTo(section) {
-                this.currentSection = section;
-                this.setActiveNavItem(section);
-                this.loadSection(section);
-            }
-
-            loadSection(section) {
-                // Update page title and breadcrumbs
-                const titles = {
-                    'dashboard': 'Dashboard Principal',
-                    'vehiculos': 'Gestión de Vehículos',
-                    'espacios': 'Espacios de Parking',
-                    'reservas': 'Sistema de Reservas',
-                    'pagos': 'Pagos y Facturación',
-                    'reportes': 'Reportes y Estadísticas',
-                    'usuarios': 'Gestión de Usuarios',
-                    'configuracion': 'Configuración del Sistema'
-                };
-
-                document.getElementById('page-title').textContent = titles[section] || 'Dashboard';
-                this.updateBreadcrumbs(section);
-
-                // Simulate loading content
-                console.log(`Cargando sección: ${section}`);
-                this.showSectionContent(section);
-            }
-
-            updateBreadcrumbs(section) {
-                const breadcrumbs = {
-                    'dashboard': ['Inicio'],
-                    'vehiculos': ['Inicio', 'Vehículos'],
-                    'espacios': ['Inicio', 'Parking'],
-                    'reservas': ['Inicio', 'Reservas'],
-                    'pagos': ['Inicio', 'Pagos'],
-                    'reportes': ['Inicio', 'Reportes'],
-                    'usuarios': ['Inicio', 'Usuarios'],
-                    'configuracion': ['Inicio', 'Configuración']
-                };
-
-                const container = document.getElementById('breadcrumbs-container');
-                const crumbs = breadcrumbs[section] || ['Inicio'];
-
-                container.innerHTML = crumbs.map((crumb, index) =>
-                    index === 0
-                        ? `<span class="text-yellow-500"><i class="fas fa-home"></i> ${crumb}</span>`
-                        : `<span><i class="fas fa-chevron-right text-xs mx-2"></i></span><span>${crumb}</span>`
-                ).join('');
-            }
-
-            showSectionContent(section) {
-                const contentMap = {
-                    'dashboard': this.getDashboardContent(),
-                    'vehiculos': this.getVehiculosContent(),
-                    'espacios': this.getEspaciosContent(),
-                    'reservas': this.getReservasContent(),
-                    'pagos': this.getPagosContent(),
-                    'reportes': this.getReportesContent(),
-                    'usuarios': this.getUsuariosContent(),
-                    'configuracion': this.getConfiguracionContent()
-                };
-
-                const mainContent = document.querySelector('main');
-                mainContent.innerHTML = contentMap[section] || this.getDefaultContent(section);
-            }
-
-            getDashboardContent() {
-                return `
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-400 text-sm">Espacios Totales</p>
-                                    <p class="text-3xl font-bold text-white mt-2">120</p>
-                                </div>
-                                <div class="w-12 h-12 gold-gradient rounded-full flex items-center justify-center">
-                                    <i class="fas fa-parking text-white"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-400 text-sm">Disponibles</p>
-                                    <p class="text-3xl font-bold text-white mt-2">42</p>
-                                </div>
-                                <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-car text-white"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-400 text-sm">Ocupados</p>
-                                    <p class="text-3xl font-bold text-white mt-2">68</p>
-                                </div>
-                                <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-times text-white"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-400 text-sm">Ingresos Hoy</p>
-                                    <p class="text-3xl font-bold text-white mt-2">Bs. 1,240</p>
-                                </div>
-                                <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-money-bill-wave text-white"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Actividad Reciente</h3>
-                        <p class="text-gray-400">Bienvenido al Dashboard del Estacionamiento Potosí</p>
-                    </div>
-                `;
-            }
-
-            getVehiculosContent() {
-                return `
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Gestión de Vehículos</h3>
-                        <p class="text-gray-400">Módulo de gestión de vehículos - En desarrollo</p>
-                    </div>
-                `;
-            }
-
-            getEspaciosContent() {
-                return `
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Espacios de Parking</h3>
-                        <p class="text-gray-400">Módulo de gestión de espacios - En desarrollo</p>
-                    </div>
-                `;
-            }
-
-            getDefaultContent(section) {
-                const sectionName = section.charAt(0).toUpperCase() + section.slice(1);
-                return `
-                    <div class="text-center py-8">
-                        <i class="fas fa-cog text-6xl text-yellow-500 mb-4"></i>
-                        <h3 class="text-2xl text-white">${sectionName}</h3>
-                        <p class="text-gray-400 mt-2">Módulo en desarrollo</p>
-                    </div>
-                `;
-            }
-
-            // Add other content methods similarly...
-
-            handleSearch(query) {
-                if (query.trim()) {
-                    alert(`Buscando: ${query}`);
-                    // Implement search logic here
-                }
-            }
-
-            handleQuickAction(action) {
-                alert(`Acción rápida: ${action}`);
-            }
-        }
-
-        // Initialize navigation manager when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            window.navManager = new NavigationManager();
-        });
-
-        // Utility functions
-        function refreshData() {
-            alert('Actualizando datos...');
-        }
-
-        function exportData() {
-            alert('Exportando datos...');
-        }
-    </script>
-
-    @yield('scripts')
+        @yield('scripts')
 </body>
 </html>
