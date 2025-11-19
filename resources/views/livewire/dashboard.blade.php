@@ -12,16 +12,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-400 text-sm">Espacios Totales</p>
-                    <p class="text-3xl font-bold text-white mt-2">120</p>
+                    <p class="text-3xl font-bold text-white mt-2">{{ $totalEspacios }}</p>
                 </div>
                 <div class="w-12 h-12 gold-gradient rounded-full flex items-center justify-center">
                     <i class="fas fa-parking text-white"></i>
-                </div>
-            </div>
-            <div class="mt-4">
-                <div class="flex items-center text-green-400 text-sm">
-                    <i class="fas fa-arrow-up mr-1"></i>
-                    <span>+5% vs ayer</span>
                 </div>
             </div>
         </div>
@@ -31,7 +25,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-400 text-sm">Disponibles</p>
-                    <p class="text-3xl font-bold text-white mt-2">42</p>
+                    <p class="text-3xl font-bold text-white mt-2">{{ $espaciosDisponibles }}</p>
                 </div>
                 <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
                     <i class="fas fa-car text-white"></i>
@@ -40,7 +34,7 @@
             <div class="mt-4">
                 <div class="flex items-center text-green-400 text-sm">
                     <i class="fas fa-check mr-1"></i>
-                    <span>35% disponibles</span>
+                    <span>{{ round(($espaciosDisponibles / $totalEspacios) * 100) }}% disponibles</span>
                 </div>
             </div>
         </div>
@@ -50,7 +44,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-400 text-sm">Ocupados</p>
-                    <p class="text-3xl font-bold text-white mt-2">68</p>
+                    <p class="text-3xl font-bold text-white mt-2">{{ $espaciosOcupados }}</p>
                 </div>
                 <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
                     <i class="fas fa-times text-white"></i>
@@ -59,7 +53,7 @@
             <div class="mt-4">
                 <div class="flex items-center text-red-400 text-sm">
                     <i class="fas fa-arrow-up mr-1"></i>
-                    <span>57% ocupación</span>
+                    <span>{{ round(($espaciosOcupados / $totalEspacios) * 100) }}% ocupación</span>
                 </div>
             </div>
         </div>
@@ -69,16 +63,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-400 text-sm">Ingresos Hoy</p>
-                    <p class="text-3xl font-bold text-white mt-2">Bs. 1,240</p>
+                    <p class="text-3xl font-bold text-white mt-2">Bs. {{ number_format($ingresosHoy, 2) }}</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
                     <i class="fas fa-money-bill-wave text-white"></i>
-                </div>
-            </div>
-            <div class="mt-4">
-                <div class="flex items-center text-green-400 text-sm">
-                    <i class="fas fa-arrow-up mr-1"></i>
-                    <span>+12% vs ayer</span>
                 </div>
             </div>
         </div>
@@ -99,115 +87,35 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Parking Visualization -->
-            <div class="bg-gray-700 rounded-lg p-6">
-                <div class="text-center mb-6">
-                    <h3 class="text-lg font-semibold text-white">Planta Baja - Zona A</h3>
-                    <p class="text-gray-400">Estado actual de los espacios</p>
-                </div>
-
-                <!-- Legend -->
-                <div class="flex justify-center space-x-6 mb-6">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-green-500 rounded"></div>
-                        <span class="text-gray-300 text-sm">Disponible</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-red-500 rounded"></div>
-                        <span class="text-gray-300 text-sm">Ocupado</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-yellow-500 rounded"></div>
-                        <span class="text-gray-300 text-sm">Reservado</span>
-                    </div>
-                </div>
-
-                <!-- Parking Grid -->
-                <div class="grid grid-cols-5 gap-4">
-                    <!-- Generate parking spots -->
-                    <div class="parking-spot bg-green-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">A1</div>
-                    <div class="parking-spot bg-red-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">A2</div>
-                    <div class="parking-spot bg-green-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">A3</div>
-                    <div class="parking-spot bg-yellow-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">A4</div>
-                    <div class="parking-spot bg-green-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">A5</div>
-
-                    <div class="parking-spot bg-red-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">B1</div>
-                    <div class="parking-spot bg-green-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">B2</div>
-                    <div class="parking-spot bg-green-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">B3</div>
-                    <div class="parking-spot bg-red-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">B4</div>
-                    <div class="parking-spot bg-green-500 text-white p-4 rounded text-center font-semibold cursor-pointer hover:opacity-80 transition">B5</div>
-                </div>
-            </div>
+            <!-- Aquí puedes integrar el componente EspaciosList -->
+            <livewire:espacios-list />
         </div>
 
         <!-- Recent Activity -->
         <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
             <h2 class="text-xl font-bold text-white mb-6">Actividad Reciente</h2>
             <div class="space-y-4">
-                <!-- Activity Items -->
-                <div class="flex items-center space-x-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">
-                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-car text-white"></i>
+                @forelse($actividadReciente as $actividad)
+                    <div class="flex items-center space-x-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">
+                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-car text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-white font-medium">
+                                @if($actividad->estado === 'activo')
+                                    Vehículo ingresó
+                                @else
+                                    Vehículo salió
+                                @endif
+                            </p>
+                            <p class="text-gray-400 text-sm">
+                                Espacio {{ $actividad->espacio->codigo }} - {{ $actividad->created_at->diffForHumans() }}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-white font-medium">Vehículo ingresó</p>
-                        <p class="text-gray-400 text-sm">Espacio B3 - Hace 5 min</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">
-                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-credit-card text-white"></i>
-                    </div>
-                    <div>
-                        <p class="text-white font-medium">Pago registrado</p>
-                        <p class="text-gray-400 text-sm">Bs. 15 - Hace 12 min</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">
-                    <div class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-calendar-check text-white"></i>
-                    </div>
-                    <div>
-                        <p class="text-white font-medium">Reserva realizada</p>
-                        <p class="text-gray-400 text-sm">Espacio A4 - Hace 25 min</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">
-                    <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-sign-out-alt text-white"></i>
-                    </div>
-                    <div>
-                        <p class="text-white font-medium">Vehículo salió</p>
-                        <p class="text-gray-400 text-sm">Espacio C2 - Hace 38 min</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="mt-8">
-                <h3 class="text-lg font-semibold text-white mb-4">Acciones Rápidas</h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <button class="p-3 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition text-center">
-                        <i class="fas fa-plus mb-1"></i>
-                        <p class="text-xs">Nuevo Ingreso</p>
-                    </button>
-                    <button class="p-3 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition text-center">
-                        <i class="fas fa-sign-out-alt mb-1"></i>
-                        <p class="text-xs">Registrar Salida</p>
-                    </button>
-                    <button class="p-3 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition text-center">
-                        <i class="fas fa-search mb-1"></i>
-                        <p class="text-xs">Buscar Vehículo</p>
-                    </button>
-                    <button class="p-3 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition text-center">
-                        <i class="fas fa-print mb-1"></i>
-                        <p class="text-xs">Generar Reporte</p>
-                    </button>
-                </div>
+                @empty
+                    <p class="text-gray-400 text-center">No hay actividad reciente.</p>
+                @endforelse
             </div>
         </div>
     </div>
