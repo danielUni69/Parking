@@ -25,4 +25,5 @@ Route::post("/logout", [LoginController::class, "logout"])->name("logout");
 Route::middleware(["auth"])->group(function () {
     Route::get("/dashboard", Dashboard::class)->name("dashboard");
     Route::get("/parking", EspaciosList::class)->name("parking");
+    Route::get('/users', \App\Livewire\Users::class)->name('users');
 });

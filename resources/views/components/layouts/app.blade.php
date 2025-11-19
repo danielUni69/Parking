@@ -158,10 +158,11 @@
                         </a>
 
                         <!-- Usuarios -->
-                        <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
+                        <a href="{{ route('users') }}" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
                             <i class="fas fa-users w-4 text-yellow-500"></i>
                             <span class="text-sm">Usuarios</span>
                         </a>
+
                     </div>
                 </div>
             </nav>
