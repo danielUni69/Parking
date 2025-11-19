@@ -2,7 +2,7 @@
     <!-- Welcome Section -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-white">Bienvenido al Sistema</h1>
-        <p class="text-gray-400 mt-2">Gestión completa del estacionamiento Jemita - {{ now()->format('d/m/Y H:i') }}</p>
+
     </div>
 
     <!-- Stats Grid -->

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Livewire Title Integration -->
-    <title>{{ $title ?? 'Estacionamiento Potosí' }}</title>
+    <title>{{ $title ?? 'Estacionamiento JEMITA' }}</title>
 
     <!-- Assets -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -63,7 +63,7 @@
                         <span class="text-lg">🦙</span>
                     </div>
                     <div>
-                        <h1 class="text-lg font-bold gold-text font-['Playfair_Display']">Estacionamiento Potosí</h1>
+                        <h1 class="text-lg font-bold gold-text font-['Playfair_Display']">Estacionamiento JEMITA</h1>
                         <p class="text-xs text-gray-400">Sistema de Gestión</p>
                     </div>
                 </div>
