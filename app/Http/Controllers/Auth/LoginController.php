@@ -11,44 +11,34 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
-    // Mostrar login
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    // Procesar login
     public function login(Request $request)
     {
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required'
         ]);
-
         if (Auth::attempt($request->only('email', 'password'))) {
             return redirect()->route('dashboard');
         }
-
         return back()->withErrors([
             'email' => 'Credenciales incorrectas',
         ]);
     }
-
-    // Cerrar sesión
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login');
+        return redirect()->route('dashboard');
     }
-
-    // Mostrar formulario registro
     public function showRegister()
     {
         $tipos = TipoUsario::all();
         return view('auth.register', compact('tipos'));
     }
-
-    // Procesar registro
     public function register(Request $request)
     {
         $request->validate([
