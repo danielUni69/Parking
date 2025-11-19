@@ -78,6 +78,7 @@
                         </button>
                     </div>
 
+                    @auth
                     <!-- User Profile -->
                     <div class="flex items-center space-x-3">
                         <div class="text-right">
@@ -88,6 +89,7 @@
                             <span class="text-white font-semibold text-sm">AU</span>
                         </div>
                     </div>
+                    @endauth
                 </div>
             </div>
 
