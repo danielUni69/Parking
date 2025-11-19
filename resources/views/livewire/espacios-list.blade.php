@@ -58,6 +58,7 @@
                         ][$tipo] ?? $config[1];
                     @endphp
 
+                    @auth
                     <button
                         wire:click="$dispatch('{{ $libre ? 'crearTicketParaEspacio' : 'finalizarTicketDeEspacio' }}', { espacioId: {{ $espacio->id }} })"
                         class="{{ $config['size'] }} {{ $config['color'] }} border rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all hover:scale-110 hover:shadow-lg hover:shadow-yellow-500/30 group cursor-pointer">
@@ -66,6 +67,7 @@
                         <span class="font-bold text-xs">{{ $espacio->codigo }}</span>
                         <div class="w-2 h-2 rounded-full {{ $libre ? 'bg-emerald-400' : 'bg-red-500' }} shadow"></div>
                     </button>
+                    @endauth
                 @endforeach
 
             </div>
