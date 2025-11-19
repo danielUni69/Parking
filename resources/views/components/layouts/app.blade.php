@@ -80,13 +80,35 @@
 
                     @auth
                     <!-- User Profile -->
-                    <div class="flex items-center space-x-3">
-                        <div class="text-right">
-                            <p class="text-sm font-medium text-white">Admin User</p>
-                            <p class="text-xs text-gray-400">Administrador</p>
+                    <div class="dropdown relative">
+                        <div class="flex items-center space-x-3 cursor-pointer">
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-white">{{ Auth::user()->name ?? 'Admin User' }}</p>
+                                <p class="text-xs text-gray-400">Administrador</p>
+                            </div>
+                            <div class="w-8 h-8 gold-gradient rounded-full flex items-center justify-center">
+                                <span class="text-white font-semibold text-sm">{{ substr(Auth::user()->name ?? 'AU', 0, 2) }}</span>
+                            </div>
                         </div>
-                        <div class="w-8 h-8 gold-gradient rounded-full flex items-center justify-center cursor-pointer">
-                            <span class="text-white font-semibold text-sm">AU</span>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" style="right: 0; left: auto;">
+                            <div class="px-4 py-2 border-b border-gray-600">
+                                <p class="text-sm text-white font-medium">{{ Auth::user()->name ?? 'Admin User' }}</p>
+                                <p class="text-xs text-gray-400">{{ Auth::user()->email ?? 'admin@example.com' }}</p>
+                            </div>
+                            <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
+                                <i class="fas fa-user-cog mr-2 w-4"></i> Perfil
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-200 hover:bg-gray-700 hover:text-white transition">
+                                <i class="fas fa-cog mr-2 w-4"></i> Configuración
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left block px-4 py-2 text-red-400 hover:bg-red-900 hover:text-white transition">
+                                    <i class="fas fa-sign-out-alt mr-2 w-4"></i> Cerrar Sesión
+                                </button>
+                            </form>
                         </div>
                     </div>
                     @endauth
