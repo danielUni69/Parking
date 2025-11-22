@@ -7,21 +7,30 @@ use App\Models\Piso;
 use App\Models\TipoEspacio;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class EspaciosList extends Component
 {
     // Propiedades que se vinculan con el Blade view
     public $pisoId;
-    public $filtroEstado = "todos"; // todos, libre, ocupado
+    public $filtroEstado = "todos";
     public $filtroTipo = "todos";
     public $busqueda = "";
     public $tipos;
 
-    // Nota: El método actualizarBusqueda() ya no es necesario gracias a wire:model.live
+    // Propiedades para crear nuevos espacios
+    public $mostrarModal = false;
+    public $nuevoEspacio = [
+        'codigo' => '',
+        'tipo_espacio_id' => '',
+        'estado' => 'libre'
+    ];
 
-    public function mount()
+    // Propiedad para controlar si está en dashboard
+    public $enDashboard = false;
+
+    public function mount($enDashboard = false)
     {
+        $this->enDashboard = $enDashboard;
         // Carga los tipos de espacio al iniciar el componente
         $this->tipos = TipoEspacio::orderBy("nombre")->get();
     }
@@ -34,49 +43,85 @@ class EspaciosList extends Component
 
     #[On("ticketCreado")]
     #[On("ticketFinalizado")]
+    #[On("espacioCreado")]
     public function refrescarEspacios()
     {
-        // No necesitas lógica aquí, el simple hecho de llamar al método
-        // provoca que el componente se "refresque" y traiga los datos nuevos de la BD.
+        // Se refresca automáticamente al recibir eventos
     }
+
+    // Métodos para manejar nuevos espacios
+    public function abrirModalCrear()
+    {
+        $this->reset('nuevoEspacio');
+        $this->nuevoEspacio['estado'] = 'libre';
+        $this->mostrarModal = true;
+    }
+
+    public function cerrarModal()
+    {
+        $this->mostrarModal = false;
+        $this->resetErrorBag();
+    }
+
+    public function crearEspacio()
+    {
+        $this->validate([
+            'nuevoEspacio.codigo' => 'required|string|max:50|unique:espacio,codigo',
+            'nuevoEspacio.tipo_espacio_id' => 'required|exists:tipo_espacios,id',
+            'nuevoEspacio.estado' => 'required|in:libre,ocupado',
+        ], [
+            'nuevoEspacio.codigo.required' => 'El código del espacio es obligatorio',
+            'nuevoEspacio.codigo.unique' => 'Este código ya existe',
+            'nuevoEspacio.tipo_espacio_id.required' => 'El tipo de espacio es obligatorio',
+        ]);
+
+        try {
+            Espacio::create([
+                'codigo' => $this->nuevoEspacio['codigo'],
+                'tipo_espacio_id' => $this->nuevoEspacio['tipo_espacio_id'],
+                'estado' => $this->nuevoEspacio['estado'],
+                'piso_id' => $this->pisoId,
+            ]);
+
+            $this->cerrarModal();
+            $this->dispatch('espacioCreado');
+            session()->flash('message', 'Espacio creado exitosamente.');
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error al crear el espacio: ' . $e->getMessage());
+        }
+    }
+
     public function render()
     {
         if (!$this->pisoId) {
             $pisoPredeterminado = Piso::where("numero", 1)->first();
             $this->pisoId = $pisoPredeterminado?->id ?? null;
 
-            // Opcional: si no existe el piso 1, toma el primer piso disponible
             if (!$this->pisoId) {
                 $this->pisoId = Piso::first()?->id;
             }
         }
 
-        // 2. Definición de la consulta base
         $query = Espacio::where("piso_id", $this->pisoId)->with("tipoEspacio");
 
-        // 3. Aplicar Filtro de estado
         if ($this->filtroEstado !== "todos") {
             $query->where("estado", $this->filtroEstado);
         }
 
-        // 4. Aplicar Filtro tipo de espacio
         if ($this->filtroTipo !== "todos") {
             $query->where("tipo_espacio_id", $this->filtroTipo);
         }
 
-        // 5. Aplicar Búsqueda por placa o código
         if (!empty($this->busqueda)) {
             $query->where(function ($q) {
-                // Búsqueda por Código de Espacio
                 $q->where("codigo", "LIKE", "%{$this->busqueda}%")
-                    // Búsqueda por Placa del Ticket Activo
                     ->orWhereHas("ticketActivo", function ($sub) {
                         $sub->where("placa", "LIKE", "%{$this->busqueda}%");
                     });
             });
         }
 
-        // 6. Retorno de la vista con los resultados
         return view("livewire.espacios-list", [
             "espacios" => $query->orderBy("codigo")->get(),
             "pisoId" => $this->pisoId,
