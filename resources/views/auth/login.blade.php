@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Estacionamiento Potosí</title>
+    <title>Iniciar Sesión - Estacionamiento JEMITA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -28,7 +28,7 @@
                 </div>
             </div>
             <h2 class="text-3xl font-bold gold-text font-['Playfair_Display']">
-                Estacionamiento Potosí
+                Estacionamiento JEMITA
             </h2>
             <p class="mt-2 text-gray-400">Sistema de Gestión de Parking</p>
         </div>

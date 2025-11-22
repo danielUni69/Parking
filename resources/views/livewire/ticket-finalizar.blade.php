@@ -54,13 +54,63 @@
                         </div>
 
                         <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-500">Hora Ingreso</span>
+                            <span class="text-gray-900 font-medium">
+                                @if($ticket)
+                                    {{ \Carbon\Carbon::parse($ticket->horaIngreso)->format('H:i') }}
+                                @endif
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-500">Hora Salida</span>
+                            <span class="text-gray-900 font-medium">
+                                {{ now()->format('H:i') }}
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center border-b pb-2">
                             <span class="text-gray-500">Tiempo Transcurrido</span>
                             <span class="text-gray-900 font-medium">{{ number_format($minutos ?? 0, 0) }} min ({{ number_format($horas ?? 0, 2) }} hrs)</span>
                         </div>
 
-                        <div class="mt-4 bg-green-50 p-4 rounded-lg border border-green-100 text-center">
+                        {{-- Información de tarifas --}}
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div class="text-center">
+                                    <p class="text-blue-600 font-semibold">Tarifa Normal</p>
+                                    <p class="text-lg font-bold text-blue-700">Bs. {{ number_format($tarifaBase ?? 0, 2) }}/h</p>
+                                    <p class="text-xs text-blue-500">6:00 - 17:59</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-purple-600 font-semibold">Tarifa Nocturna</p>
+                                    <p class="text-lg font-bold text-purple-700">Bs. {{ number_format($tarifaNocturna ?? 0, 2) }}/h</p>
+                                    <p class="text-xs text-purple-500">18:00 - 5:59 (+2 Bs)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Desglose del cálculo si está disponible --}}
+                        @if(isset($desgloseHoras))
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <p class="text-sm font-semibold text-gray-700 mb-2">Desglose:</p>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="text-center">
+                                    <p class="text-gray-600">Horas Normales</p>
+                                    <p class="font-bold text-gray-800">{{ $desgloseHoras['normales'] ?? 0 }}</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-gray-600">Horas Nocturnas</p>
+                                    <p class="font-bold text-gray-800">{{ $desgloseHoras['nocturnas'] ?? 0 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        <div class="mt-4 bg-green-50 p-4 rounded-lg border border-green-200 text-center">
                             <p class="text-sm text-green-800 mb-1">Total a Pagar</p>
                             <p class="text-3xl font-bold text-green-700">{{ number_format($monto ?? 0, 2) }} Bs</p>
+                            <p class="text-xs text-green-600 mt-1">Incluye tarifa variable por horario</p>
                         </div>
                     </div>
                 </div>
