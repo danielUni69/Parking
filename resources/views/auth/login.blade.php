@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="{{ asset('img/logo.ico') }}" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Estacionamiento JEMITA</title>
+    <title>Iniciar Sesión</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -116,7 +117,7 @@
         </div>
 
         <div class="text-center text-gray-500 text-sm mt-8">
-            <p>&copy; 2024 Estacionamiento Potosí. Todos los derechos reservados.</p>
+            <p>&copy; 2025 Estacionamiento Potosí. Todos los derechos reservados.</p>
         </div>
     </div>
 

@@ -23,19 +23,10 @@ class Dashboard extends Component
 
     public function cargarDatos()
     {
-        // Total de espacios
         $this->totalEspacios = Espacio::count();
-
-        // Espacios disponibles
         $this->espaciosDisponibles = Espacio::where('estado', 'libre')->count();
-
-        // Espacios ocupados
         $this->espaciosOcupados = Espacio::where('estado', 'ocupado')->count();
-
-        // Ingresos del día
         $this->ingresosHoy = Pago::whereDate('created_at', today())->sum('monto');
-
-        // Actividad reciente (últimos 5 tickets)
         $this->actividadReciente = Ticket::with(['espacio', 'pago'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
