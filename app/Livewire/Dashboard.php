@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Espacio;
+use App\Models\TipoEspacio;
 use App\Models\Piso;
 use App\Models\Ticket;
 use App\Models\Pago;
@@ -15,6 +17,8 @@ class Dashboard extends Component
     public $espaciosOcupados;
     public $ingresosHoy;
     public $actividadReciente;
+    public $tiposEspacios;
+    public $espaciosPorTipo;
 
     public function mount()
     {
@@ -31,6 +35,15 @@ class Dashboard extends Component
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
+        $this->tiposEspacios = TipoEspacio::all();
+        $this->espaciosPorTipo = Espacio::select(
+            'tipo_espacio_id',
+            DB::raw('count(*) as total')
+        )
+            ->where('estado', 'libre')
+            ->groupBy('tipo_espacio_id')
+            ->pluck('total', 'tipo_espacio_id')
+            ->toArray();
     }
 
     public function render()

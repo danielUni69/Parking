@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire;
 
 use App\Models\Espacio;
@@ -7,6 +8,8 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TicketFinalizar extends Component
 {
@@ -28,23 +31,17 @@ class TicketFinalizar extends Component
         if (!$this->ticket) {
             return;
         }
-
-        $this->tarifaBase = $this->espacio->tipoEspacio->tarifa_hora;
-        $this->tarifaNocturna = $this->tarifaBase + 2;
-
+        $this->tarifaBase = $this->espacio->tipoEspacio->tarifa_hora ?? 0;
+        $this->tarifaNocturna = $this->tarifaBase + 2; // +2 Bs desde 18:00
         $inicio = Carbon::parse($this->ticket->horaIngreso)->setTimezone('America/La_Paz');
         $fin = now()->setTimezone('America/La_Paz');
         $totalMinutos = $inicio->diffInMinutes($fin);
-
         $this->horas = ceil($totalMinutos / 60);
-
         if ($this->horas < 1) {
             $this->horas = 1;
         }
-
         $this->monto = $this->calcularMontoConTarifaVariable($inicio, $fin, $this->horas);
         $this->minutos = $totalMinutos;
-
         $this->dispatch("abrir-modal-finalizar");
     }
 
@@ -52,25 +49,25 @@ class TicketFinalizar extends Component
     {
         $montoTotal = 0;
         $horaActual = $inicio->copy();
-
         $inicioTarifaNocturna = 18;
         $finTarifaNocturna = 6;
-
         $this->desgloseHoras = [
-            'normales' => 0,
-            'nocturnas' => 0
+            "normales" => 0,
+            "nocturnas" => 0,
         ];
 
-        for ($hora = 0; $hora < $horasTotales; $hora++) {
+        for ($i = 0; $i < $horasTotales; $i++) {
             $horaDelDia = $horaActual->hour;
+
             $esNocturno = ($horaDelDia >= $inicioTarifaNocturna || $horaDelDia < $finTarifaNocturna);
+
             $tarifaHora = $esNocturno ? $this->tarifaNocturna : $this->tarifaBase;
             $montoTotal += $tarifaHora;
 
             if ($esNocturno) {
-                $this->desgloseHoras['nocturnas']++;
+                $this->desgloseHoras["nocturnas"]++;
             } else {
-                $this->desgloseHoras['normales']++;
+                $this->desgloseHoras["normales"]++;
             }
 
             $horaActual->addHour();
@@ -85,39 +82,60 @@ class TicketFinalizar extends Component
             return;
         }
 
-        $this->ticket->update([
-            "horaSalida" => now(),
-            "estado" => "finalizado",
-            "costo_total" => $this->monto,
+        $pagoCreado = null;
+        DB::transaction(function () use (&$pagoCreado) {
+            $this->ticket->update([
+                "horaSalida" => now(),
+                "estado" => "finalizado",
+                "costo_total" => $this->monto,
+            ]);
+            $pagoCreado = Pago::create([
+                "monto" => $this->monto,
+                "fecha" => now(),
+                "ticket_id" => $this->ticket->id,
+                "metodo" => "efectivo",
+            ]);
+            $this->espacio->update(["estado" => "libre"]);
+            $this->dispatch("ticketFinalizado");
+            $this->dispatch("cerrar-modal-finalizar");
+        });
+
+        if (!$pagoCreado) {
+            return;
+        }
+        $pagoCreado->load([
+            "ticket" => function ($query) {
+                $query->with(["espacio.tipoEspacio"]);
+            },
         ]);
+        $minutosReales = Carbon::parse($pagoCreado->ticket->horaIngreso)
+            ->diffInMinutes($pagoCreado->ticket->horaSalida);
+        $horasCobro = ceil($minutosReales / 60);
+        $data = [
+            "pago" => $pagoCreado,
+            "ticket" => $pagoCreado->ticket,
+            "espacio" => $pagoCreado->ticket->espacio,
+            "tipoEspacio" => $pagoCreado->ticket->espacio->tipoEspacio,
+            "horasCobro" => $horasCobro,
+            "minutosReales" => $minutosReales,
+        ];
+        $pdf = Pdf::loadView("pdf.ticket-pdf", $data)
+            ->setPaper([0, 0, 320.77, 600], "portrait")
+            ->setOptions([
+                "isHtml5ParserEnabled" => true,
+                "isRemoteEnabled" => true,
+            ]);
 
-        Pago::create([
-            "monto" => $this->monto,
-            "fecha" => now(),
-            "ticket_id" => $this->ticket->id,
-            "metodo" => "efectivo",
-        ]);
+        $nombreArchivo =
+            "ticket-pago-" .
+            $pagoCreado->id .
+            "-" .
+            now()->format("YmdHis") .
+            ".pdf";
 
-        $this->espacio->update(["estado" => "libre"]);
-
-        $pdf = Pdf::loadView('tickets.ticket-pdf', [
-            'espacio' => $this->espacio,
-            'ticket' => $this->ticket,
-            'horas' => $this->horas,
-            'minutos' => $this->minutos,
-            'tarifaBase' => $this->tarifaBase,
-            'tarifaNocturna' => $this->tarifaNocturna,
-            'monto' => $this->monto,
-            'desgloseHoras' => $this->desgloseHoras,
-        ]);
-
-        $this->dispatch("ticketFinalizado");
-        $this->dispatch("cerrar-modal-finalizar");
-
-        return response()->streamDownload(
-            fn () => print($pdf->output()),
-            "ticket-{$this->ticket->id}.pdf"
-        );
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, $nombreArchivo);
     }
 
     public function render()
