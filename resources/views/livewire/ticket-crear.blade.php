@@ -1,5 +1,4 @@
 <div>
-    {{-- Usamos x-data para controlar el estado local del modal --}}
     <div
         x-data="{ open: false }"
         x-on:abrir-modal-crear.window="open = true; $nextTick(() => $refs.inputPlaca.focus())"
@@ -12,7 +11,6 @@
         role="dialog"
         aria-modal="true">
 
-        {{-- Backdrop oscuro --}}
         <div x-show="open"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0"
@@ -23,8 +21,6 @@
              class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
 
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-
-            {{-- Contenido del Modal --}}
             <div x-show="open"
                  x-transition:enter="ease-out duration-300"
                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -37,28 +33,59 @@
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                         <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+
                             <h3 class="text-xl font-semibold leading-6 text-gray-900" id="modal-title">
                                 Registrar Ingreso
                             </h3>
 
                             <div class="mt-4 bg-blue-50 p-3 rounded-md border border-blue-100">
                                 <p class="text-sm text-blue-700">
-                                    Espacio seleccionado: <span class="font-bold text-lg ml-1">{{ $espacio->codigo ?? '...' }}</span>
+                                    Espacio seleccionado:
+                                    <span class="font-bold text-lg ml-1">{{ $espacio->codigo ?? '...' }}</span>
                                 </p>
                             </div>
 
                             <div class="mt-6">
-                                <label for="placa" class="block text-sm font-medium leading-6 text-gray-900">Número de Placa</label>
+                                <label class="block text-sm font-medium text-gray-900">
+                                    País / Formato de Placa
+                                </label>
+
+                                <select
+                                    wire:model="formato_id"
+                                    class="mt-2 block w-full rounded-md border-gray-300 py-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-lg">
+                                    <option value="">Seleccione formato…</option>
+                                    @foreach ($formatos as $formato)
+                                        <option value="{{ $formato->id }}">
+                                            {{ $formato->pais }} ({{ $formato->code }})
+                                            @if ($formato->ejemplo)
+                                                — Ej: {{ $formato->ejemplo }}
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                @error('formato_id')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mt-6">
+                                <label for="placa" class="block text-sm font-medium leading-6 text-gray-900">
+                                    Número de Placa
+                                </label>
                                 <div class="mt-2">
                                     <input type="text"
                                            wire:model="placa"
                                            x-ref="inputPlaca"
                                            wire:keydown.enter="crearTicket"
-                                           class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-lg sm:leading-6 uppercase"
-                                           placeholder="EJ: 2045-XTY">
-                                    @error('placa') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                           class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-lg uppercase"
+                                           placeholder="Escriba la placa sin guiones ni espacios">
+                                    @error('placa')
+                                        <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -75,6 +102,7 @@
                         Cancelar
                     </button>
                 </div>
+
             </div>
         </div>
     </div>

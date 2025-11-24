@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire;
 
 use App\Models\Espacio;
@@ -7,6 +6,7 @@ use App\Models\Pago;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TicketFinalizar extends Component
 {
@@ -23,8 +23,6 @@ class TicketFinalizar extends Component
     public function abrirModal($espacioId)
     {
         $this->espacio = Espacio::find($espacioId);
-
-        // Usamos la relación para obtener el ticket activo
         $this->ticket = $this->espacio->ticketActivo;
 
         if (!$this->ticket) {
@@ -32,26 +30,19 @@ class TicketFinalizar extends Component
         }
 
         $this->tarifaBase = $this->espacio->tipoEspacio->tarifa_hora;
-        $this->tarifaNocturna = $this->tarifaBase + 2; // +2 Bs desde las 6pm
+        $this->tarifaNocturna = $this->tarifaBase + 2;
 
-        // 1. Calculamos minutos reales
-        $inicio = Carbon::parse($this->ticket->horaIngreso);
-        $fin = now();
-
+        $inicio = Carbon::parse($this->ticket->horaIngreso)->setTimezone('America/La_Paz');
+        $fin = now()->setTimezone('America/La_Paz');
         $totalMinutos = $inicio->diffInMinutes($fin);
 
-        // 2. LÓGICA DE COBRO: Redondear siempre hacia arriba
         $this->horas = ceil($totalMinutos / 60);
 
-        // SEGURIDAD: Si entraron y salieron en el mismo minuto (0 min), forzamos a 1 hora
         if ($this->horas < 1) {
             $this->horas = 1;
         }
 
-        // 3. Calcular Monto con tarifa variable según horario
         $this->monto = $this->calcularMontoConTarifaVariable($inicio, $fin, $this->horas);
-
-        // Guardamos los minutos reales para mostrar en el modal
         $this->minutos = $totalMinutos;
 
         $this->dispatch("abrir-modal-finalizar");
@@ -62,9 +53,8 @@ class TicketFinalizar extends Component
         $montoTotal = 0;
         $horaActual = $inicio->copy();
 
-        // Definir horarios de tarifa nocturna (18:00 a 06:00)
-        $inicioTarifaNocturna = 18; // 6pm
-        $finTarifaNocturna = 6;     // 6am
+        $inicioTarifaNocturna = 18;
+        $finTarifaNocturna = 6;
 
         $this->desgloseHoras = [
             'normales' => 0,
@@ -73,16 +63,10 @@ class TicketFinalizar extends Component
 
         for ($hora = 0; $hora < $horasTotales; $hora++) {
             $horaDelDia = $horaActual->hour;
-
-            // Determinar si es horario nocturno
             $esNocturno = ($horaDelDia >= $inicioTarifaNocturna || $horaDelDia < $finTarifaNocturna);
-
-            // Aplicar tarifa correspondiente
             $tarifaHora = $esNocturno ? $this->tarifaNocturna : $this->tarifaBase;
-
             $montoTotal += $tarifaHora;
 
-            // Contar horas para el desglose
             if ($esNocturno) {
                 $this->desgloseHoras['nocturnas']++;
             } else {
@@ -101,14 +85,12 @@ class TicketFinalizar extends Component
             return;
         }
 
-        // 1. Cerrar el Ticket
         $this->ticket->update([
             "horaSalida" => now(),
             "estado" => "finalizado",
             "costo_total" => $this->monto,
         ]);
 
-        // 2. Registrar el Pago
         Pago::create([
             "monto" => $this->monto,
             "fecha" => now(),
@@ -116,12 +98,26 @@ class TicketFinalizar extends Component
             "metodo" => "efectivo",
         ]);
 
-        // 3. Liberar el Espacio
         $this->espacio->update(["estado" => "libre"]);
 
-        // 4. Notificar a la interfaz
+        $pdf = Pdf::loadView('tickets.ticket-pdf', [
+            'espacio' => $this->espacio,
+            'ticket' => $this->ticket,
+            'horas' => $this->horas,
+            'minutos' => $this->minutos,
+            'tarifaBase' => $this->tarifaBase,
+            'tarifaNocturna' => $this->tarifaNocturna,
+            'monto' => $this->monto,
+            'desgloseHoras' => $this->desgloseHoras,
+        ]);
+
         $this->dispatch("ticketFinalizado");
         $this->dispatch("cerrar-modal-finalizar");
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            "ticket-{$this->ticket->id}.pdf"
+        );
     }
 
     public function render()

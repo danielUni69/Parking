@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Espacio;
 use App\Models\Ticket;
+use App\Models\PlacaFormato;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -12,42 +13,59 @@ class TicketCrear extends Component
 {
     public $espacio;
     public $placa;
-    public $mostrarModal = false; // Controlamos el estado desde PHP para mayor seguridad si se desea
+    public $formato_id;
+    public $formatos;
+
+    public function mount()
+    {
+        $this->formatos = PlacaFormato::orderBy('pais', 'asc')->get();
+    }
 
     #[On("crearTicketParaEspacio")]
     public function abrirModal($espacioId)
     {
         $this->espacio = Espacio::find($espacioId);
-
-        if (!$this->espacio) {
-            return;
-        }
+        if (!$this->espacio) return;
 
         $this->placa = "";
-
-        // Disparamos el evento de navegador para AlpineJS
+        $this->formato_id = PlacaFormato::where('code', 'BO')->value('id');
         $this->dispatch("abrir-modal-crear");
     }
 
     public function crearTicket()
     {
         $this->validate([
-            "placa" => "required|min:3|max:10", // Validación mejorada
+            "formato_id" => "required|exists:placa_formatos,id",
+            "placa" => "required|min:3|max:12",
         ]);
 
+        $formato = PlacaFormato::find($this->formato_id);
+        $placaMayus = strtoupper($this->placa);
+
+        if (!preg_match("/{$formato->regex}/", $placaMayus)) {
+            return $this->addError("placa", "La placa no coincide con el formato del país seleccionado.");
+        }
+
+        $ticketExistente = Ticket::where("placa", $placaMayus)
+            ->where("estado", "activo")
+            ->first();
+
+        if ($ticketExistente) {
+            return $this->addError("placa", "Esta placa ya tiene un ingreso activo.");
+        }
+
         Ticket::create([
-            "placa" => strtoupper($this->placa), // Guardamos la placa en mayúsculas
+            "placa" => $placaMayus,
             "espacio_id" => $this->espacio->id,
             "usuario_id" => Auth::id(),
             "horaIngreso" => now(),
             "estado" => "activo",
         ]);
 
-        // Actualizamos el estado del espacio a ocupado (id 4 asumiendo lógica, o string 'ocupado')
         $this->espacio->update(["estado" => "ocupado"]);
 
-        $this->dispatch("ticketCreado"); // Para recargar la lista de espacios
-        $this->dispatch("cerrar-modal-crear"); // Para cerrar el modal
+        $this->dispatch("ticketCreado");
+        $this->dispatch("cerrar-modal-crear");
     }
 
     public function render()

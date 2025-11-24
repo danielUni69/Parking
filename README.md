@@ -7,6 +7,34 @@ VALUES
 ```
 ---
 
+# Cargar formatos de placas
+```sql
+INSERT INTO placa_formatos (pais, code, regex, ejemplo, bandera_icon, created_at, updated_at)
+VALUES
+-- Bolivia
+('Bolivia', 'BO', '^[0-9]{4}[A-Z]{3}$', '1234ABC', NULL, NOW(), NOW()),
+-- Argentina
+('Argentina', 'AR', '^[A-Z]{2}[0-9]{3}[A-Z]{2}$', 'AB123CD', NULL, NOW(), NOW()),
+-- Chile
+('Chile', 'CL', '^[A-Z]{4}[0-9]{2}$', 'ABCD12', NULL, NOW(), NOW()),
+-- Perú
+('Peru', 'PE', '^[A-Z0-9]{1}[0-9]{3}[A-Z]{2}$', 'A123BC', NULL, NOW(), NOW()),
+-- Brasil
+('Brasil', 'BR', '^[A-Z]{3}[0-9][A-Z][0-9]{2}$', 'ABC1D23', NULL, NOW(), NOW()),
+-- México
+('Mexico', 'MX', '^[A-Z]{3}-[0-9]{3}$', 'ABC-123', NULL, NOW(), NOW()),
+-- USA (genérico)
+('Estados Unidos', 'US', '^[A-Z0-9]{1,7}$', '7ABC123', NULL, NOW(), NOW()),
+-- España
+('España', 'ES', '^[0-9]{4}[A-Z]{3}$', '1234BCD', NULL, NOW(), NOW()),
+-- Colombia
+('Colombia', 'CO', '^[A-Z]{3}[0-9]{3}$', 'ABC123', NULL, NOW(), NOW()),
+-- Paraguay
+('Paraguay', 'PY', '^[A-Z]{3}[0-9]{3}$', 'ABC123', NULL, NOW(), NOW());
+
+```
+---
+
 # 🚗 Inserción de Tipos de Espacio y Espacios del Estacionamiento (PostgreSQL)
 
 El siguiente script crea los **tipos de espacio** y genera una distribución **lógica y optimizada** para dos pisos del estacionamiento.

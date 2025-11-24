@@ -21,7 +21,6 @@
              class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
 
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-
             <div x-show="open"
                  x-transition:enter="ease-out duration-300"
                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -31,99 +30,101 @@
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
 
-                {{-- Header con color diferente para distinguir salida --}}
-                <div class="bg-green-600 px-4 py-4 sm:px-6">
-                    <h3 class="text-lg font-semibold leading-6 text-white flex items-center gap-2" id="modal-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-                        </svg>
-                        Finalizar Ticket
-                    </h3>
-                </div>
-
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="text-gray-500">Espacio</span>
-                            <span class="text-xl font-bold text-gray-900">{{ $espacio->codigo ?? '' }}</span>
+                <div class="bg-gradient-to-r from-green-600 to-emerald-700 px-4 py-4 sm:px-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
                         </div>
-
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="text-gray-500">Placa</span>
-                            <span class="text-lg font-mono font-bold text-gray-900">{{ $ticket->placa ?? '' }}</span>
-                        </div>
-
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="text-gray-500">Hora Ingreso</span>
-                            <span class="text-gray-900 font-medium">
-                                @if($ticket)
-                                    {{ \Carbon\Carbon::parse($ticket->horaIngreso)->format('H:i') }}
-                                @endif
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="text-gray-500">Hora Salida</span>
-                            <span class="text-gray-900 font-medium">
-                                {{ now()->format('H:i') }}
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="text-gray-500">Tiempo Transcurrido</span>
-                            <span class="text-gray-900 font-medium">{{ number_format($minutos ?? 0, 0) }} min ({{ number_format($horas ?? 0, 2) }} hrs)</span>
-                        </div>
-
-                        {{-- Información de tarifas --}}
-                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                            <div class="grid grid-cols-2 gap-2 text-sm">
-                                <div class="text-center">
-                                    <p class="text-blue-600 font-semibold">Tarifa Normal</p>
-                                    <p class="text-lg font-bold text-blue-700">Bs. {{ number_format($tarifaBase ?? 0, 2) }}/h</p>
-                                    <p class="text-xs text-blue-500">6:00 - 17:59</p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-purple-600 font-semibold">Tarifa Nocturna</p>
-                                    <p class="text-lg font-bold text-purple-700">Bs. {{ number_format($tarifaNocturna ?? 0, 2) }}/h</p>
-                                    <p class="text-xs text-purple-500">18:00 - 5:59 (+2 Bs)</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Desglose del cálculo si está disponible --}}
-                        @if(isset($desgloseHoras))
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                            <p class="text-sm font-semibold text-gray-700 mb-2">Desglose:</p>
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div class="text-center">
-                                    <p class="text-gray-600">Horas Normales</p>
-                                    <p class="font-bold text-gray-800">{{ $desgloseHoras['normales'] ?? 0 }}</p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-gray-600">Horas Nocturnas</p>
-                                    <p class="font-bold text-gray-800">{{ $desgloseHoras['nocturnas'] ?? 0 }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-
-                        <div class="mt-4 bg-green-50 p-4 rounded-lg border border-green-200 text-center">
-                            <p class="text-sm text-green-800 mb-1">Total a Pagar</p>
-                            <p class="text-3xl font-bold text-green-700">{{ number_format($monto ?? 0, 2) }} Bs</p>
-                            <p class="text-xs text-green-600 mt-1">Incluye tarifa variable por horario</p>
-                        </div>
+                        <h3 class="text-lg font-semibold text-white" id="modal-title">
+                            Finalizar Ticket
+                        </h3>
                     </div>
                 </div>
 
-                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="space-y-5">
+                        @if($ticket)
+                            <div class="flex justify-between items-center border-b pb-3">
+                                <span class="text-gray-600">Espacio</span>
+                                <span class="text-xl font-bold text-gray-900">{{ $espacio->codigo ?? '' }}</span>
+                            </div>
+
+                            <div class="flex justify-between items-center border-b pb-3">
+                                <span class="text-gray-600">Placa</span>
+                                <span class="text-lg font-mono font-bold text-gray-900">{{ $ticket->placa ?? '' }}</span>
+                            </div>
+
+                            <div class="flex justify-between items-center border-b pb-3">
+                                <span class="text-gray-600">Hora Ingreso</span>
+                                <span class="text-gray-900 font-medium">
+                                    {{ \Carbon\Carbon::parse($ticket->horaIngreso)->setTimezone('America/La_Paz')->format('H:i') }}
+                                </span>
+                            </div>
+
+                            <div class="flex justify-between items-center border-b pb-3">
+                                <span class="text-gray-600">Hora Salida</span>
+                                <span class="text-gray-900 font-medium">
+                                    {{ now()->setTimezone('America/La_Paz')->format('H:i') }}
+                                </span>
+                            </div>
+
+                            <div class="flex justify-between items-center border-b pb-3">
+                                <span class="text-gray-600">Tiempo Transcurrido</span>
+                                <span class="text-gray-900 font-medium">
+                                    {{ number_format($minutos ?? 0, 0) }} min ({{ number_format($horas ?? 0, 2) }} hrs)
+                                </span>
+                            </div>
+
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div class="text-center p-2">
+                                        <p class="text-blue-700 font-semibold">Tarifa Diurna</p>
+                                        <p class="text-2xl font-bold text-blue-800">Bs. {{ number_format($tarifaBase ?? 0, 2) }}</p>
+                                        <p class="text-xs text-blue-600">06:00 - 17:59</p>
+                                    </div>
+                                    <div class="text-center p-2">
+                                        <p class="text-purple-700 font-semibold">Tarifa Nocturna</p>
+                                        <p class="text-2xl font-bold text-purple-800">Bs. {{ number_format($tarifaNocturna ?? 0, 2) }}</p>
+                                        <p class="text-xs text-purple-600">18:00 - 05:59</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if(isset($desgloseHoras))
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <p class="text-sm font-semibold text-gray-700 mb-3">Desglose de Horas:</p>
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div class="text-center p-2 bg-white rounded shadow-sm">
+                                        <p class="text-gray-600 font-medium">Horas Diurnas</p>
+                                        <p class="font-bold text-gray-800 text-lg">{{ $desgloseHoras['normales'] ?? 0 }}</p>
+                                    </div>
+                                    <div class="text-center p-2 bg-white rounded shadow-sm">
+                                        <p class="text-gray-600 font-medium">Horas Nocturnas</p>
+                                        <p class="font-bold text-gray-800 text-lg">{{ $desgloseHoras['nocturnas'] ?? 0 }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            <div class="mt-4 bg-green-50 p-5 rounded-lg border border-green-200 text-center">
+                                <p class="text-sm text-green-800 mb-1">Total a Pagar</p>
+                                <p class="text-3xl font-bold text-green-700">{{ number_format($monto ?? 0, 2) }} Bs</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6">
                     <button type="button"
                             wire:click="finalizar"
-                            class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">
+                            class="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:ml-3 sm:w-auto">
                         Cobrar e Imprimir
                     </button>
                     <button type="button"
                             x-on:click="open = false"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                            class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto">
                         Cancelar
                     </button>
                 </div>
