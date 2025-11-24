@@ -3,8 +3,8 @@
     x-on:abrir-modal-crear.window="open = true; $nextTick(() => $refs.inputPlaca.focus())"
     x-on:cerrar-modal-crear.window="open = false" x-on:keydown.escape.window="open = false"
     style="display: none;" x-show="open"
-    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4" aria-labelledby="modal-title"
-    role="dialog" aria-modal="true">
+    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+    aria-labelledby="modal-title" role="dialog" aria-modal="true">
 
     <div x-show="open"
          x-transition:enter="ease-out duration-300"
@@ -41,7 +41,21 @@
                             </p>
                         </div>
 
-                        <div class="mt-6">
+                        <div class="mt-4">
+                            <label for="formato_id" class="block text-sm font-medium text-gray-300 mb-2">
+                                Formato de Placa *
+                            </label>
+                            <select wire:model="formato_id"
+                                    class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                @foreach($formatos as $formato)
+                                    <option value="{{ $formato->id }}">
+                                        {{ $formato->pais }} (Ej: {{ $formato->ejemplo }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mt-4">
                             <label for="placa" class="block text-sm font-medium text-gray-300 mb-2">
                                 <i class="fas fa-car-alt text-xs mr-1"></i>
                                 Número de Placa *
@@ -57,11 +71,11 @@
 
             <div class="flex justify-end space-x-3 pt-4 border-t border-gray-700">
                 <button type="button" x-on:click="open = false"
-                    class="px-4 py-2 text-gray-300 border border-gray-600 rounded hover:bg-gray-700 transition-colors text-sm">
+                        class="px-4 py-2 text-gray-300 border border-gray-600 rounded hover:bg-gray-700 transition-colors text-sm">
                     Cancelar
                 </button>
-                <button type="submit"
-                    class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm flex items-center gap-2">
+                <button type="button" wire:click="crearTicket"
+                        class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm flex items-center gap-2">
                     <i class="fas fa-ticket-alt"></i>
                     Registrar Entrada
                 </button>

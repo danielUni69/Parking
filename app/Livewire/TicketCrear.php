@@ -19,6 +19,7 @@ class TicketCrear extends Component
     public function mount()
     {
         $this->formatos = PlacaFormato::orderBy('pais', 'asc')->get();
+        $this->formato_id = PlacaFormato::where('code', 'BO')->value('id');
     }
 
     #[On("crearTicketParaEspacio")]
@@ -41,11 +42,9 @@ class TicketCrear extends Component
 
         $formato = PlacaFormato::find($this->formato_id);
         $placaMayus = strtoupper($this->placa);
-
         if (!preg_match("/{$formato->regex}/", $placaMayus)) {
-            return $this->addError("placa", "La placa no coincide con el formato del país seleccionado.");
+            return $this->addError("placa", "La placa no coincide con el formato del país seleccionado ({$formato->pais}).");
         }
-
         $ticketExistente = Ticket::where("placa", $placaMayus)
             ->where("estado", "activo")
             ->first();
@@ -53,7 +52,6 @@ class TicketCrear extends Component
         if ($ticketExistente) {
             return $this->addError("placa", "Esta placa ya tiene un ingreso activo.");
         }
-
         Ticket::create([
             "placa" => $placaMayus,
             "espacio_id" => $this->espacio->id,
@@ -61,9 +59,7 @@ class TicketCrear extends Component
             "horaIngreso" => now(),
             "estado" => "activo",
         ]);
-
         $this->espacio->update(["estado" => "ocupado"]);
-
         $this->dispatch("ticketCreado");
         $this->dispatch("cerrar-modal-crear");
     }
