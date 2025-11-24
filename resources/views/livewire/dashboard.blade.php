@@ -215,78 +215,112 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const staticPoint = [-19.58794772850716, -65.75752515850782];
-            const map = L.map('map', {
-                zoomControl: true,
-                attributionControl: false
-            }).setView(staticPoint, 15);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-            const staticIcon = L.icon({
-                iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32]
-            });
-            L.marker(staticPoint, {icon: staticIcon}).addTo(map)
-                .bindPopup('Punto de Estacionamiento')
-                .openPopup();
-            const userIcon = L.icon({
-                iconUrl: 'https://cdn-icons-png.flaticon.com/512/484/484167.png',
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32]
-            });
-            let routingControl = null;
-            function loadUserLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            const userLat = position.coords.latitude;
-                            const userLng = position.coords.longitude;
-                            const userLocation = [userLat, userLng];
-                            map.eachLayer(function(layer) {
-                                if (layer instanceof L.Marker && layer.getLatLng().lat !== staticPoint[0]) {
-                                    map.removeLayer(layer);
+            document.addEventListener('DOMContentLoaded', function() {
+                // VERIFICACIÓN DE SEGURIDAD:
+                // Si no existe el div del mapa, detenemos el script para evitar errores.
+                if (!document.getElementById('map')) return;
+
+                const staticPoint = [-19.58794772850716, -65.75752515850782];
+
+                const map = L.map('map', {
+                    zoomControl: true,
+                    attributionControl: false
+                }).setView(staticPoint, 15);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                const staticIcon = L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32],
+                    popupAnchor: [0, -32]
+                });
+
+                L.marker(staticPoint, {icon: staticIcon}).addTo(map)
+                    .bindPopup('Punto de Estacionamiento')
+                    .openPopup();
+
+                const userIcon = L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/484/484167.png',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32],
+                    popupAnchor: [0, -32]
+                });
+
+                let routingControl = null;
+
+                // Definición de la función
+                function loadUserLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) { // Callback de éxito
+                                const userLat = position.coords.latitude;
+                                const userLng = position.coords.longitude;
+                                const userLocation = [userLat, userLng];
+
+                                // Limpiar marcadores antiguos (excepto el estático)
+                                map.eachLayer(function(layer) {
+                                    if (layer instanceof L.Marker && layer.getLatLng().lat !== staticPoint[0]) {
+                                        map.removeLayer(layer);
+                                    }
+                                });
+
+                                // Limpiar ruta anterior si existe
+                                if (routingControl !== null) {
+                                    map.removeControl(routingControl);
+                                    routingControl = null; // Resetear variable
                                 }
-                            });
-                            if (routingControl !== null) {
-                                map.removeControl(routingControl);
+
+                                // Marcador del usuario
+                                L.marker(userLocation, {icon: userIcon}).addTo(map)
+                                    .bindPopup('Tu ubicación actual')
+                                    .openPopup();
+
+                                // Trazar ruta
+                                if (typeof L.Routing !== 'undefined') {
+                                    routingControl = L.Routing.control({
+                                        waypoints: [
+                                            L.latLng(userLocation),
+                                            L.latLng(staticPoint)
+                                        ],
+                                        routeWhileDragging: true,
+                                        lineOptions: {
+                                            styles: [{color: '#3b82f6', weight: 4}]
+                                        },
+                                        createMarker: function() { return null; }, // No crear marcadores extra
+                                        addWaypoints: false
+                                    }).addTo(map);
+                                } else {
+                                    console.warn('Librería Leaflet Routing Machine no cargada.');
+                                }
+                            },
+                            function(error) { // Callback de error
+                                alert("No se pudo obtener tu ubicación: " + error.message);
+                            },
+                            { // Opciones
+                                enableHighAccuracy: true,
+                                timeout: 10000,
+                                maximumAge: 0
                             }
-                            L.marker(userLocation, {icon: userIcon}).addTo(map)
-                                .bindPopup('Tu ubicación actual')
-                                .openPopup();
-                            routingControl = L.Routing.control({
-                                waypoints: [
-                                    L.latLng(userLocation),
-                                    L.latLng(staticPoint)
-                                ],
-                                routeWhileDragging: true,
-                                lineOptions: {
-                                    styles: [{color: '#3b82f6', weight: 4}]
-                                },
-                                createMarker: function() { return null; }
-                            }).addTo(map);
-                        },
-                        function(error) {
-                            alert("No se pudo obtener tu ubicación: " + error.message);
-                        },
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 10000,
-                            maximumAge: 0
-                        }
-                    );
-                } else {
-                    alert("Geolocalización no soportada por este navegador.");
-                }
-            }
-            loadUserLocation();
-            @auth
-                document.getElementById('reloadLocation').addEventListener('click', loadUserLocation);
-            @endauth
-        });
-    </script>
+                        );
+                    } else {
+                        alert("Geolocalización no soportada por este navegador.");
+                    }
+                } // Cierre de loadUserLocation
+
+                // Ejecutar al inicio
+                loadUserLocation();
+
+                // Event Listener condicional (Solo si el usuario está logueado)
+                @auth
+                    const reloadBtn = document.getElementById('reloadLocation');
+                    if (reloadBtn) {
+                        reloadBtn.addEventListener('click', loadUserLocation);
+                    }
+                @endauth
+
+            }); // <--- ¡IMPORTANTE! Este cierre faltaba o estaba mal ubicado en tu archivo original.
+        </script>
 </div>
