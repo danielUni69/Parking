@@ -2,11 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="{{ asset('img/logo.ico') }}" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Estacionamiento JEMITA</title>
+    <title>Iniciar Sesión</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
         .gold-gradient {
             background: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #FFEC8B 100%);
         }
@@ -19,21 +23,18 @@
     </style>
 </head>
 <body class="bg-black min-h-screen flex items-center justify-center p-4">
+
     <div class="max-w-md w-full space-y-8">
-        <!-- Header -->
         <div class="text-center">
             <div class="flex justify-center mb-4">
-                <div class="w-16 h-16 gold-gradient rounded-full flex items-center justify-center shadow-lg">
-                    <span class="text-2xl">🦙</span>
-                </div>
+                <img src="{{ asset('img/logo.png') }}" alt="Logo" class="w-16 h-16 shadow-lg object-cover">
             </div>
-            <h2 class="text-3xl font-bold gold-text font-['Playfair_Display']">
+            <h2 class="text-3xl font-bold gold-text">
                 Estacionamiento JEMITA
             </h2>
             <p class="mt-2 text-gray-400">Sistema de Gestión de Parking</p>
         </div>
 
-        <!-- Login Card -->
         <div class="bg-gray-900 rounded-2xl shadow-2xl p-8 border border-yellow-600/20">
             <h2 class="text-2xl font-bold text-center text-white mb-8">
                 Iniciar Sesión
@@ -48,7 +49,6 @@
             <form method="POST" action="{{ route('login.post') }}" class="space-y-6">
                 @csrf
 
-                <!-- Email Field -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
                         Correo Electrónico
@@ -70,7 +70,6 @@
                     </div>
                 </div>
 
-                <!-- Password Field -->
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
                         Contraseña
@@ -92,25 +91,6 @@
                     </div>
                 </div>
 
-                <!-- Remember Me & Forgot Password -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input
-                            id="remember_me"
-                            name="remember"
-                            type="checkbox"
-                            class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-600 rounded bg-gray-800"
-                        >
-                        <label for="remember_me" class="ml-2 block text-sm text-gray-300">
-                            Recordarme
-                        </label>
-                    </div>
-                    <a href="#" class="text-sm text-yellow-500 hover:text-yellow-400 transition duration-200">
-                        ¿Olvidaste tu contraseña?
-                    </a>
-                </div>
-
-                <!-- Submit Button -->
                 <button
                     type="submit"
                     class="w-full gold-gradient py-3 px-4 rounded-lg font-semibold text-black hover:shadow-lg transform hover:scale-105 transition duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-gray-900"
@@ -124,24 +104,23 @@
                 </button>
             </form>
 
-            <!-- Divider -->
-            <div class="mt-8 pt-6 border-t border-gray-700">
-                <p class="text-center text-gray-400 text-sm">
-                    ¿No tienes una cuenta?
-                    <a href="{{ route('register') }}" class="text-yellow-500 hover:text-yellow-400 font-medium transition duration-200 ml-1">
-                        Crear cuenta nueva
-                    </a>
-                </p>
-            </div>
+            @if(\App\Models\User::count() === 0)
+                <div class="mt-8 pt-6 border-t border-gray-700">
+                    <p class="text-center text-gray-400 text-sm">
+                        ¿No tienes una cuenta?
+                        <a href="{{ route('register') }}" class="text-yellow-500 hover:text-yellow-400 font-medium transition duration-200 ml-1">
+                            Crear cuenta nueva
+                        </a>
+                    </p>
+                </div>
+            @endif
         </div>
 
-        <!-- Footer -->
         <div class="text-center text-gray-500 text-sm mt-8">
-            <p>&copy; 2024 Estacionamiento Potosí. Todos los derechos reservados.</p>
+            <p>&copy; 2025 Estacionamiento Potosí. Todos los derechos reservados.</p>
         </div>
     </div>
 
-    <!-- Animal Pattern Decorations -->
     <div class="fixed top-10 left-10 opacity-5 text-8xl">🦙</div>
     <div class="fixed bottom-10 right-10 opacity-5 text-8xl">🦙</div>
     <div class="fixed top-1/4 right-20 opacity-5 text-6xl">🦙</div>
