@@ -5,8 +5,8 @@
         class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
         aria-labelledby="modal-title" role="dialog" aria-modal="true">
 
-        <div class="relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
-            <div class="bg-gradient-to-r from-yellow-600 to-yellow-500 px-4 py-4 sm:px-6">
+        <div class="relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg max-h-full overflow-y-auto">
+            <div class="bg-gradient-to-r from-yellow-600 to-yellow-500 px-4 py-4 sm:px-6 sticky top-0 z-10">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-white rounded-full">
                         <i class="fas fa-money-bill-wave text-yellow-500"></i>
@@ -85,7 +85,7 @@
                 </div>
             </div>
 
-            <div class="bg-gray-700/80 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6">
+            <div class="bg-gray-700/80 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 sticky bottom-0 z-10">
                 <button type="button"
                         wire:click="finalizar"
                         class="inline-flex w-full justify-center rounded-md border border-transparent bg-yellow-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 sm:ml-3 sm:w-auto">
