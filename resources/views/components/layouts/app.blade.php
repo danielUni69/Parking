@@ -96,32 +96,8 @@
                     @endauth
                 </div>
             </div>
-<<<<<<< HEAD
             @auth
-                <nav class="bg-gray-750 border-t border-gray-700">
-                    <div class="px-6">
-                        <div class="flex items-center space-x-1">
-                            <a href="{{ route('dashboard') }}" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg active">
-                                <i class="fas fa-tachometer-alt w-4 text-yellow-500"></i>
-                                <span class="text-sm">Dashboard</span>
-                            </a>
-                            <a href="{{ route('parking') }}" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
-                                <i class="fas fa-parking w-4 text-yellow-500"></i>
-                                <span class="text-sm">Parking</span>
-                            </a>
-                            <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
-                                <i class="fas fa-chart-bar w-4 text-yellow-500"></i>
-                                <span class="text-sm">Reportes</span>
-                            </a>
-                            <a href="{{ route('users') }}" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
-                                <i class="fas fa-users w-4 text-yellow-500"></i>
-                                <span class="text-sm">Usuarios</span>
-                            </a>
-                        </div>
-=======
-
-            <!-- Navigation Menu - Horizontal -->
-            <nav class="bg-gray-750 border-t border-gray-700">
+           <nav class="bg-gray-750 border-t border-gray-700">
                 <div class="px-6">
                     <div class="flex items-center space-x-1">
                         <!-- Dashboard -->
@@ -139,7 +115,7 @@
                         <!-- Pagos y Facturación -->
 
                         <!-- Reportes -->
-                        <a href="#" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
+                        <a href="{{ route('reportes.pagos')}}" class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg">
                             <i class="fas fa-chart-bar w-4 text-yellow-500"></i>
                             <span class="text-sm">Reportes</span>
                         </a>
@@ -149,8 +125,6 @@
                             <i class="fas fa-users w-4 text-yellow-500"></i>
                             <span class="text-sm">Usuarios</span>
                         </a>
-
-
                     </div>
                 </nav>
             @endauth

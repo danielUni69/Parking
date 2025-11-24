@@ -1,32 +1,92 @@
 <div>
     <div class="m-4">
         <div class="mb-8">
-            @if($espaciosDisponibles > 0)
-                <div class="bg-green-800 rounded-xl p-6 border border-green-700 flex items-center space-x-4 mb-6">
-                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-check-circle text-white text-xl"></i>
+            <div class="text-center mb-6">
+                <h2 class="text-4xl font-bold text-white mb-2">Nuestras Tarifas</h2>
+                <p class="text-gray-400 text-lg">Espacios disponibles y precios por hora</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach($tiposEspacios as $tipo)
+                    @php
+                        $disponibles = $espaciosPorTipo[$tipo->id] ?? 0;
+                        $currentHour = now()->hour;
+                        $isNightRate = $currentHour >= 18 || $currentHour < 6;
+                        $tarifaBase = $tipo->tarifa_hora;
+                        $tarifaActual = $isNightRate ? $tarifaBase + 2 : $tarifaBase;
+                    @endphp
+
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 border border-gray-700 hover:border-yellow-500 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105">
+                        <!-- Icono según tipo -->
+                        <div class="flex justify-center mb-4">
+                            @if($tipo->nombre === 'Auto normal')
+                                <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-car text-white text-3xl"></i>
+                                </div>
+                            @elseif($tipo->nombre === 'Moto')
+                                <div class="w-20 h-20 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-motorcycle text-white text-3xl"></i>
+                                </div>
+                            @elseif($tipo->nombre === 'Discapacitado')
+                                <div class="w-20 h-20 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-wheelchair text-white text-3xl"></i>
+                                </div>
+                            @else
+                                <div class="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-truck text-white text-3xl"></i>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Nombre del tipo -->
+                        <h3 class="text-2xl font-bold text-white text-center mb-2">{{ $tipo->nombre }}</h3>
+                        <p class="text-gray-400 text-sm text-center mb-4">{{ $tipo->descripcion }}</p>
+
+                        <!-- Tarifa -->
+                        <div class="bg-gray-700 rounded-xl p-4 mb-4">
+                            <div class="text-center">
+                                <p class="text-gray-400 text-sm mb-1">Tarifa por hora</p>
+                                <p class="text-4xl font-bold text-yellow-400">Bs. {{ number_format($tarifaActual, 2) }}</p>
+                                @if($isNightRate)
+                                    <div class="mt-2 inline-flex items-center bg-blue-900 text-blue-200 px-3 py-1 rounded-full text-xs">
+                                        <i class="fas fa-moon mr-1"></i>
+                                        <span>Tarifa nocturna (18:00 - 6:00)</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Disponibilidad -->
+                        <div class="text-center">
+                            @if($disponibles > 0)
+                                <div class="inline-flex items-center bg-green-900 text-green-300 px-4 py-2 rounded-full">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    <span class="font-semibold">{{ $disponibles }} {{ $disponibles == 1 ? 'espacio disponible' : 'espacios disponibles' }}</span>
+                                </div>
+                            @else
+                                <div class="inline-flex items-center bg-red-900 text-red-300 px-4 py-2 rounded-full">
+                                    <i class="fas fa-times-circle mr-2"></i>
+                                    <span class="font-semibold">No disponible</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-green-100 font-bold">¡Espacios disponibles!</p>
-                        <p class="text-green-200 text-sm">Hay {{ $espaciosDisponibles }} espacios libres.</p>
-                    </div>
-                </div>
-            @else
-                <div class="bg-red-800 rounded-xl p-6 border border-red-700 flex items-center space-x-4 mb-6">
-                    <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-red-100 font-bold">¡No hay espacios! :(</p>
-                        <p class="text-red-200 text-sm">Todos los espacios están ocupados.</p>
-                    </div>
-                </div>
-            @endif
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Nota de tarifa nocturna -->
+        <div class="mb-8 text-center">
+            <div class="inline-block bg-gradient-to-r from-blue-900 to-indigo-900 rounded-xl p-4 border border-blue-700">
+                <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+                <span class="text-blue-200">Se aplica un cargo adicional de Bs. 2.00 en horario nocturno (18:00 - 6:00)</span>
+            </div>
         </div>
 
         @auth
+            <!-- Dashboard Stats para usuarios autenticados -->
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-white">Bienvenido al Sistema</h1>
+                <h1 class="text-3xl font-bold text-white mb-6">Panel de Control</h1>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-yellow-500 transition duration-200">
@@ -87,10 +147,12 @@
                 </div>
             </div>
         @endauth
+
+        <!-- Mapa y Actividad -->
         <div class="grid grid-cols-1 @auth lg:grid-cols-3 @endauth gap-6">
             <div class="@auth lg:col-span-2 @endauth bg-gray-800 rounded-xl p-6 border border-gray-700">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold text-white">Mapa de Ubicación</h2>
+                    <h2 class="text-xl font-bold text-white">Nuestra Ubicación</h2>
                     @auth
                         <button id="reloadLocation" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center">
                             <i class="fas fa-sync-alt mr-2"></i> Recargar Ubicación
@@ -146,6 +208,9 @@
         .leaflet-routing-container {
             background: rgba(45, 55, 72, 0.9) !important;
             color: white !important;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
     </style>
 

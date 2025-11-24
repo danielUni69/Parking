@@ -1,6 +1,5 @@
 <div>
     @if(!$enDashboard)
-    <!-- CABECERA SOLO PARA VISTA INDEPENDIENTE -->
     <header class="bg-gray-900/95 backdrop-blur border-b border-gray-800 sticky top-0 z-50">
         <div class="flex items-center justify-between px-4 py-3 text-sm gap-4">
             <div class="flex items-center gap-3 shrink-0">
@@ -8,7 +7,6 @@
                 <livewire:pisos-list />
             </div>
 
-            <!-- Buscador -->
             <div class="flex-1 max-w-md">
                 <div class="relative">
                     <i class="fas fa-magnifying-glass absolute left-3 top-2.5 text-gray-500 text-xs"></i>
@@ -18,43 +16,39 @@
                 </div>
             </div>
 
-            <!-- Filtros ultra pequeños -->
             <div class="flex items-center gap-2">
-                <select wire:model.live="filtroEstado" class="px-2.5 py-2 bg-gray-800/70 border border-gray-700 rounded text-xs">
+                <select wire:model.live="filtroEstado" class="text-white px-2.5 py-2 bg-gray-800/70 border border-gray-700 rounded text-xs">
                     <option value="todos">Todos</option>
                     <option value="libre">Libres</option>
                     <option value="ocupado">Ocupados</option>
                 </select>
-                <select wire:model.live="filtroTipo" class="px-2.5 py-2 bg-gray-800/70 border border-gray-700 rounded text-xs">
+                <select wire:model.live="filtroTipo" class="text-white px-2.5 py-2 bg-gray-800/70 border border-gray-700 rounded text-xs">
                     <option value="todos">Tipo</option>
                     @foreach($tipos as $tipo)
                         <option value="{{ $tipo->id }}">{{ Str::limit($tipo->nombre, 8) }}</option>
                     @endforeach
                 </select>
 
-                <!-- Botón para nuevo espacio -->
                 @auth
                 <button
                     wire:click="abrirModalCrear"
                     class="px-2.5 py-2 bg-green-600 hover:bg-green-700 border border-green-500 rounded text-xs flex items-center gap-1 transition-colors"
                     title="Crear nuevo espacio"
                 >
-                    <i class="fas fa-plus text-xs"></i>
-                    <span>Nuevo</span>
+                    <i class="fas fa-plus text-xs text-white"></i>
+                    <span class="text-white">Nuevo</span>
                 </button>
                 @endauth
             </div>
         </div>
     </header>
     @else
-    <!-- CABECERA COMPACTA PARA DASHBOARD -->
     <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
             <livewire:pisos-list />
         </div>
 
         <div class="flex items-center gap-2">
-            <!-- Buscador compacto -->
             <div class="relative">
                 <i class="fas fa-magnifying-glass absolute left-2 top-2 text-gray-400 text-xs"></i>
                 <input type="text" wire:model.live.debounce.300ms="busqueda"
@@ -62,21 +56,19 @@
                        class="pl-6 pr-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500 w-32">
             </div>
 
-            <!-- Filtros compactos -->
-            <select wire:model.live="filtroEstado" class="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs">
+            <select wire:model.live="filtroEstado" class="text-white px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs">
                 <option value="todos">Todos</option>
                 <option value="libre">Libres</option>
                 <option value="ocupado">Ocupados</option>
             </select>
 
-            <select wire:model.live="filtroTipo" class="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs">
+            <select wire:model.live="filtroTipo" class="text-white px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs">
                 <option value="todos">Tipo</option>
                 @foreach($tipos as $tipo)
                     <option value="{{ $tipo->id }}">{{ Str::limit($tipo->nombre, 6) }}</option>
                 @endforeach
             </select>
 
-            <!-- Botón nuevo espacio compacto -->
             @auth
             <button
                 wire:click="abrirModalCrear"
@@ -84,14 +76,13 @@
                 title="Crear nuevo espacio"
             >
                 <i class="fas fa-plus text-xs"></i>
-                <span class="hidden sm:inline">Nuevo</span>
+                <span class="hidden sm:inline text-red">Nuevo</span>
             </button>
             @endauth
         </div>
     </div>
     @endif
 
-    <!-- CONTENIDO DE ESPACIOS -->
     <div class="@if(!$enDashboard) flex-1 p-3 overflow-auto min-h-screen bg-gray-950 @endif">
         @if(!$pisoId)
             <div class="text-center py-20 text-gray-600">
@@ -119,7 +110,7 @@
                         class="{{ $config['size'] }} {{ $config['color'] }} border rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all hover:scale-110 hover:shadow-lg hover:shadow-yellow-500/30 group cursor-pointer">
 
                         <i class="fas {{ $config['icon'] }} text-gray-300 group-hover:text-white"></i>
-                        <span class="font-bold text-xs">{{ $espacio->codigo }}</span>
+                        <span class="font-bold text-xs text-white">{{ $espacio->codigo }}</span>
                         <div class="w-2 h-2 rounded-full {{ $libre ? 'bg-emerald-400' : 'bg-red-500' }} shadow"></div>
                     </button>
                     @endauth
@@ -253,7 +244,7 @@
 
     <!-- Leyenda solo para vista independiente -->
     @if(!$enDashboard)
-    <div class="fixed bottom-2 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur border border-gray-800 rounded-full px-4 py-1.5 text-xs flex gap-4 shadow-xl">
+    <div class="fixed bottom-2 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur border border-gray-800 rounded-full px-4 py-1.5 text-xs flex gap-4 shadow-xl text-white">
         <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>Libre</span>
         <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>Ocupado</span>
     </div>
