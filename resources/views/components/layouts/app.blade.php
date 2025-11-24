@@ -32,7 +32,7 @@
                     <img src="{{ asset('img/logo.png') }}" alt="Logo JEMITA" class="h-full w-auto">
                 </div>
                 <div>
-                    <h1 class="text-lg font-medium gold-text">Estacionamiento JEMITA</h1>
+                    <h1 class="text-lg font-medium gold-text">Estacionamiento M&M</h1>
                     <p class="text-xs text-gray-400">Sistema de Gestión</p>
                 </div>
             </div>
