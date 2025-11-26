@@ -2,6 +2,7 @@
 use App\Livewire\Dashboard;
 use App\Livewire\EspaciosList;
 use App\Livewire\ReportesPagos;
+use App\Livewire\ReportesPisos;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 
@@ -27,4 +28,5 @@ Route::middleware(["auth"])->group(function () {
     Route::get("/users", \App\Livewire\Users::class)->name("users");
     Route::get("/profile", \App\Livewire\Profile::class)->name("profile");
     Route::get("/reportes/pagos", ReportesPagos::class)->name("reportes.pagos");
+    Route::get("/reportes/pisos", ReportesPisos::class)->name("reportes.pisos");
 });

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire;
 
 use Livewire\Component;
@@ -17,11 +16,9 @@ class ReportesPagos extends Component
     public $fechaFin;
     public $tipoEspacio = "todos";
     public $estado = "todos";
-    public $tipoReporte = "completo"; // completo, pagos, tickets
 
     // Datos
-    public $tickets;
-    public $pagos;
+    public $registros;
     public $estadisticas = [];
     public $tiposEspacios;
 
@@ -53,8 +50,8 @@ class ReportesPagos extends Component
             ],
         );
 
-        // Query base de tickets
-        $queryTickets = Ticket::with([
+        // Query de tickets con sus pagos
+        $query = Ticket::with([
             "espacio.tipoEspacio",
             "usuario",
             "pago",
@@ -65,31 +62,17 @@ class ReportesPagos extends Component
 
         // Filtrar por tipo de espacio
         if ($this->tipoEspacio !== "todos") {
-            $queryTickets->whereHas("espacio", function ($query) {
-                $query->where("tipo_espacio_id", $this->tipoEspacio);
+            $query->whereHas("espacio", function ($q) {
+                $q->where("tipo_espacio_id", $this->tipoEspacio);
             });
         }
 
         // Filtrar por estado
         if ($this->estado !== "todos") {
-            $queryTickets->where("estado", $this->estado);
+            $query->where("estado", $this->estado);
         }
 
-        $this->tickets = $queryTickets->orderBy("horaIngreso", "desc")->get();
-
-        // Query de pagos
-        $queryPagos = Pago::with(["ticket.espacio.tipoEspacio"])->whereBetween(
-            "fecha",
-            [$this->fechaInicio . " 00:00:00", $this->fechaFin . " 23:59:59"],
-        );
-
-        if ($this->tipoEspacio !== "todos") {
-            $queryPagos->whereHas("ticket.espacio", function ($query) {
-                $query->where("tipo_espacio_id", $this->tipoEspacio);
-            });
-        }
-
-        $this->pagos = $queryPagos->orderBy("fecha", "desc")->get();
+        $this->registros = $query->orderBy("horaIngreso", "desc")->get();
 
         // Calcular estadísticas
         $this->calcularEstadisticas();
@@ -99,41 +82,43 @@ class ReportesPagos extends Component
 
     private function calcularEstadisticas()
     {
-        // Total de ingresos
-        $totalIngresos = $this->pagos->sum("monto");
+        // Total de ingresos (solo tickets pagados)
+        $totalIngresos = $this->registros
+            ->where("estado", "pagado")
+            ->sum(function ($ticket) {
+                return $ticket->pago ? $ticket->pago->monto : 0;
+            });
 
         // Cantidad de tickets por estado
-        $ticketsActivos = $this->tickets->where("estado", "activo")->count();
-        $ticketsPagados = $this->tickets->where("estado", "pagado")->count();
+        $ticketsActivos = $this->registros->where("estado", "activo")->count();
+        $ticketsPagados = $this->registros->where("estado", "pagado")->count();
 
         // Ingresos por tipo de espacio
-        $ingresosPorTipo = $this->pagos
-            ->groupBy("ticket.espacio.tipoEspacio.nombre")
+        $ingresosPorTipo = $this->registros
+            ->where("estado", "pagado")
+            ->groupBy(function ($ticket) {
+                return $ticket->espacio->tipoEspacio->nombre ?? "N/A";
+            })
             ->map(function ($group) {
                 return [
                     "cantidad" => $group->count(),
-                    "total" => $group->sum("monto"),
+                    "total" => $group->sum(function ($ticket) {
+                        return $ticket->pago ? $ticket->pago->monto : 0;
+                    }),
                 ];
             });
 
         // Promedio de ingresos
         $promedioIngreso =
-            $this->pagos->count() > 0
-                ? $totalIngresos / $this->pagos->count()
-                : 0;
-
-        // Ticket con mayor monto
-        $ticketMayorMonto = $this->pagos->sortByDesc("monto")->first();
+            $ticketsPagados > 0 ? $totalIngresos / $ticketsPagados : 0;
 
         $this->estadisticas = [
             "totalIngresos" => $totalIngresos,
-            "cantidadTickets" => $this->tickets->count(),
+            "cantidadTickets" => $this->registros->count(),
             "ticketsActivos" => $ticketsActivos,
             "ticketsPagados" => $ticketsPagados,
-            "cantidadPagos" => $this->pagos->count(),
             "promedioIngreso" => $promedioIngreso,
             "ingresosPorTipo" => $ingresosPorTipo,
-            "ticketMayorMonto" => $ticketMayorMonto,
         ];
     }
 
@@ -146,26 +131,26 @@ class ReportesPagos extends Component
         $data = [
             "fechaInicio" => $this->fechaInicio,
             "fechaFin" => $this->fechaFin,
-            "tickets" => $this->tickets,
-            "pagos" => $this->pagos,
+            "registros" => $this->registros,
             "estadisticas" => $this->estadisticas,
-            "tipoReporte" => $this->tipoReporte,
             "fechaGeneracion" => Carbon::now()->format("d/m/Y H:i:s"),
+            "filtroTipoEspacio" =>
+                $this->tipoEspacio !== "todos"
+                    ? $this->tiposEspacios->find($this->tipoEspacio)->nombre
+                    : "Todos",
+            "filtroEstado" =>
+                $this->estado !== "todos" ? ucfirst($this->estado) : "Todos",
         ];
 
         $pdf = Pdf::loadView("reportes.pdf", $data)
-            ->setPaper("a4", "portrait")
+            ->setPaper("a4", "landscape")
             ->setOptions([
                 "isHtml5ParserEnabled" => true,
                 "isRemoteEnabled" => true,
             ]);
 
         $nombreArchivo =
-            "reporte_" .
-            $this->tipoReporte .
-            "_" .
-            Carbon::now()->format("Y-m-d_His") .
-            ".pdf";
+            "reporte_parking_" . Carbon::now()->format("Y-m-d_His") . ".pdf";
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
@@ -178,10 +163,8 @@ class ReportesPagos extends Component
         $this->fechaFin = Carbon::now()->format("Y-m-d");
         $this->tipoEspacio = "todos";
         $this->estado = "todos";
-        $this->tipoReporte = "completo";
         $this->mostrarResultados = false;
-        $this->tickets = [];
-        $this->pagos = [];
+        $this->registros = [];
         $this->estadisticas = [];
     }
 

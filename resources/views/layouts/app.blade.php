@@ -214,7 +214,7 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto bg-gray-900 p-6">
+        <main class="flex-1 overflow-y-auto bg-gray-900">
            @yield('content')
            {{-- {{ $slot }} --}}
         </main>

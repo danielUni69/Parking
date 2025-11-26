@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Pagos y Tickets</title>
+    <title>Reporte de Estacionamiento</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            font-size: 11px;
+            font-size: 10px;
             line-height: 1.4;
             color: #333;
         }
@@ -27,13 +27,13 @@
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 26px;
             margin-bottom: 5px;
             color: #fbbf24;
         }
 
         .header .subtitle {
-            font-size: 12px;
+            font-size: 13px;
             color: #d1d5db;
         }
 
@@ -49,12 +49,14 @@
             color: #1f2937;
             font-size: 14px;
             margin-bottom: 10px;
+            font-weight: bold;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 5px;
+            padding: 3px 0;
         }
 
         .info-label {
@@ -94,14 +96,55 @@
         }
 
         .stat-label {
-            font-size: 10px;
+            font-size: 9px;
             margin-bottom: 5px;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
         .stat-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1f2937;
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #fbbf24;
+        }
+
+        .tipo-ingresos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tipo-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .tipo-card h4 {
+            font-size: 10px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .tipo-card .monto {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 3px;
+        }
+
+        .tipo-card .cantidad {
+            font-size: 9px;
+            color: #9ca3af;
         }
 
         table {
@@ -119,25 +162,46 @@
         table th {
             padding: 10px 8px;
             text-align: left;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
+            border-right: 1px solid #374151;
+        }
+
+        table th:last-child {
+            border-right: none;
+        }
+
+        table th.text-center {
+            text-align: center;
+        }
+
+        table th.text-right {
+            text-align: right;
         }
 
         table td {
             padding: 8px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 10px;
+            font-size: 9px;
         }
 
-        table tbody tr:hover {
+        table td.text-center {
+            text-align: center;
+        }
+
+        table td.text-right {
+            text-align: right;
+        }
+
+        table tbody tr:nth-child(even) {
             background: #f9fafb;
         }
 
         .badge {
             display: inline-block;
-            padding: 3px 8px;
+            padding: 4px 10px;
             border-radius: 12px;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: bold;
         }
 
@@ -152,9 +216,14 @@
         }
 
         .total-row {
-            background: #fef3c7;
+            background: #fef3c7 !important;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
+        }
+
+        .total-row td {
+            padding: 12px 8px;
+            border-top: 2px solid #fbbf24;
         }
 
         .footer {
@@ -163,16 +232,7 @@
             padding-top: 20px;
             border-top: 2px solid #e5e7eb;
             color: #6b7280;
-            font-size: 10px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #1f2937;
-            margin: 20px 0 10px 0;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #fbbf24;
+            font-size: 9px;
         }
 
         .no-data {
@@ -180,10 +240,7 @@
             padding: 30px;
             color: #9ca3af;
             font-style: italic;
-        }
-
-        .page-break {
-            page-break-after: always;
+            font-size: 11px;
         }
     </style>
 </head>
@@ -191,7 +248,7 @@
     <!-- Header -->
     <div class="header">
         <h1>🦙 ESTACIONAMIENTO JEMITA</h1>
-        <div class="subtitle">Reporte de {{ ucfirst($tipoReporte) }} - Sistema de Gestión</div>
+        <div class="subtitle">Reporte de Registros de Estacionamiento</div>
     </div>
 
     <!-- Información del Reporte -->
@@ -202,12 +259,16 @@
             <span class="info-value">{{ \Carbon\Carbon::parse($fechaInicio)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') }}</span>
         </div>
         <div class="info-row">
-            <span class="info-label">Fecha de Generación:</span>
-            <span class="info-value">{{ $fechaGeneracion }}</span>
+            <span class="info-label">Tipo de Espacio:</span>
+            <span class="info-value">{{ $filtroTipoEspacio }}</span>
         </div>
         <div class="info-row">
-            <span class="info-label">Tipo de Reporte:</span>
-            <span class="info-value">{{ ucfirst($tipoReporte) }}</span>
+            <span class="info-label">Estado:</span>
+            <span class="info-value">{{ $filtroEstado }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Fecha de Generación:</span>
+            <span class="info-value">{{ $fechaGeneracion }}</span>
         </div>
     </div>
 
@@ -218,11 +279,11 @@
             <div class="stat-value">Bs. {{ number_format($estadisticas['totalIngresos'], 2) }}</div>
         </div>
         <div class="stat-card blue">
-            <div class="stat-label">Total Tickets</div>
+            <div class="stat-label">Total Registros</div>
             <div class="stat-value">{{ $estadisticas['cantidadTickets'] }}</div>
         </div>
         <div class="stat-card orange">
-            <div class="stat-label">Tickets Activos</div>
+            <div class="stat-label">Vehículos Activos</div>
             <div class="stat-value">{{ $estadisticas['ticketsActivos'] }}</div>
         </div>
         <div class="stat-card purple">
@@ -234,109 +295,66 @@
     <!-- Ingresos por Tipo de Espacio -->
     @if($estadisticas['ingresosPorTipo']->isNotEmpty())
         <div class="section-title">💰 Ingresos por Tipo de Espacio</div>
+        <div class="tipo-ingresos">
+            @foreach($estadisticas['ingresosPorTipo'] as $tipo => $datos)
+                <div class="tipo-card">
+                    <h4>{{ $tipo }}</h4>
+                    <div class="monto">Bs. {{ number_format($datos['total'], 2) }}</div>
+                    <div class="cantidad">{{ $datos['cantidad'] }} vehículos</div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
+    <!-- Listado de Registros -->
+    <div class="section-title">🚗 Registros de Estacionamiento ({{ $registros->count() }})</div>
+    @if($registros->count() > 0)
         <table>
             <thead>
                 <tr>
-                    <th>Tipo de Espacio</th>
-                    <th style="text-align: center;">Cantidad de Tickets</th>
-                    <th style="text-align: right;">Total Ingresos</th>
+                    <th>Fecha Ingreso</th>
+                    <th>Fecha Salida/Pago</th>
+                    <th>Placa</th>
+                    <th>Tipo Espacio</th>
+                    <th>Espacio</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-right">Monto</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($estadisticas['ingresosPorTipo'] as $tipo => $datos)
+                @foreach($registros as $registro)
                     <tr>
-                        <td><strong>{{ $tipo }}</strong></td>
-                        <td style="text-align: center;">{{ $datos['cantidad'] }}</td>
-                        <td style="text-align: right;"><strong>Bs. {{ number_format($datos['total'], 2) }}</strong></td>
+                        <td>{{ \Carbon\Carbon::parse($registro->horaIngreso)->format('d/m/Y H:i') }}</td>
+                        <td>{{ $registro->horaSalida ? \Carbon\Carbon::parse($registro->horaSalida)->format('d/m/Y H:i') : '-' }}</td>
+                        <td><strong>{{ $registro->placa }}</strong></td>
+                        <td>{{ $registro->espacio->tipoEspacio->nombre ?? 'N/A' }}</td>
+                        <td>{{ $registro->espacio->codigo ?? 'N/A' }}</td>
+                        <td class="text-center">
+                            @if($registro->estado === 'activo')
+                                <span class="badge badge-active">Activo</span>
+                            @else
+                                <span class="badge badge-paid">Pagado</span>
+                            @endif
+                        </td>
+                        <td class="text-right">
+                            @if($registro->pago)
+                                <strong>Bs. {{ number_format($registro->pago->monto, 2) }}</strong>
+                            @else
+                                <span style="color: #9ca3af;">-</span>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="6" style="text-align: right;"><strong>TOTAL INGRESOS:</strong></td>
+                    <td style="text-align: right;"><strong>Bs. {{ number_format($estadisticas['totalIngresos'], 2) }}</strong></td>
+                </tr>
+            </tfoot>
         </table>
-    @endif
-
-    <!-- Listado de Tickets -->
-    @if($tipoReporte === 'completo' || $tipoReporte === 'tickets')
-        <div class="section-title">🎫 Listado de Tickets ({{ $tickets->count() }})</div>
-        @if($tickets->count() > 0)
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Placa</th>
-                        <th>Tipo Espacio</th>
-                        <th>Espacio</th>
-                        <th>Ingreso</th>
-                        <th>Salida</th>
-                        <th>Estado</th>
-                        <th style="text-align: right;">Monto</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($tickets as $ticket)
-                        <tr>
-                            <td>#{{ $ticket->id }}</td>
-                            <td><strong>{{ $ticket->placa }}</strong></td>
-                            <td>{{ $ticket->espacio->tipoEspacio->nombre ?? 'N/A' }}</td>
-                            <td>{{ $ticket->espacio->codigo ?? 'N/A' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($ticket->horaIngreso)->format('d/m/Y H:i') }}</td>
-                            <td>{{ $ticket->horaSalida ? \Carbon\Carbon::parse($ticket->horaSalida)->format('d/m/Y H:i') : '-' }}</td>
-                            <td>
-                                @if($ticket->estado === 'activo')
-                                    <span class="badge badge-active">Activo</span>
-                                @else
-                                    <span class="badge badge-paid">Pagado</span>
-                                @endif
-                            </td>
-                            <td style="text-align: right;">
-                                {{ $ticket->pago ? 'Bs. ' . number_format($ticket->pago->monto, 2) : '-' }}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @else
-            <div class="no-data">No se encontraron tickets en este período</div>
-        @endif
-    @endif
-
-    <!-- Listado de Pagos -->
-    @if($tipoReporte === 'completo' || $tipoReporte === 'pagos')
-        <div class="page-break"></div>
-        <div class="section-title">💵 Listado de Pagos ({{ $pagos->count() }})</div>
-        @if($pagos->count() > 0)
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Pago</th>
-                        <th>ID Ticket</th>
-                        <th>Placa</th>
-                        <th>Tipo Espacio</th>
-                        <th>Fecha</th>
-                        <th style="text-align: right;">Monto</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($pagos as $pago)
-                        <tr>
-                            <td>#{{ $pago->id }}</td>
-                            <td>#{{ $pago->ticket_id }}</td>
-                            <td><strong>{{ $pago->ticket->placa ?? 'N/A' }}</strong></td>
-                            <td>{{ $pago->ticket->espacio->tipoEspacio->nombre ?? 'N/A' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($pago->fecha)->format('d/m/Y H:i') }}</td>
-                            <td style="text-align: right;"><strong>Bs. {{ number_format($pago->monto, 2) }}</strong></td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr class="total-row">
-                        <td colspan="5" style="text-align: right; padding: 12px;"><strong>TOTAL GENERAL:</strong></td>
-                        <td style="text-align: right; padding: 12px;"><strong>Bs. {{ number_format($pagos->sum('monto'), 2) }}</strong></td>
-                    </tr>
-                </tfoot>
-            </table>
-        @else
-            <div class="no-data">No se encontraron pagos en este período</div>
-        @endif
+    @else
+        <div class="no-data">No se encontraron registros en el período seleccionado</div>
     @endif
 
     <!-- Footer -->

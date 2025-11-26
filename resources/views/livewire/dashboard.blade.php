@@ -216,8 +216,6 @@
 
     <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // VERIFICACIÓN DE SEGURIDAD:
-                // Si no existe el div del mapa, detenemos el script para evitar errores.
                 if (!document.getElementById('map')) return;
 
                 const staticPoint = [-19.58794772850716, -65.75752515850782];
@@ -251,7 +249,6 @@
 
                 let routingControl = null;
 
-                // Definición de la función
                 function loadUserLocation() {
                     if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition(
@@ -260,25 +257,21 @@
                                 const userLng = position.coords.longitude;
                                 const userLocation = [userLat, userLng];
 
-                                // Limpiar marcadores antiguos (excepto el estático)
                                 map.eachLayer(function(layer) {
                                     if (layer instanceof L.Marker && layer.getLatLng().lat !== staticPoint[0]) {
                                         map.removeLayer(layer);
                                     }
                                 });
 
-                                // Limpiar ruta anterior si existe
                                 if (routingControl !== null) {
                                     map.removeControl(routingControl);
                                     routingControl = null; // Resetear variable
                                 }
 
-                                // Marcador del usuario
                                 L.marker(userLocation, {icon: userIcon}).addTo(map)
                                     .bindPopup('Tu ubicación actual')
                                     .openPopup();
 
-                                // Trazar ruta
                                 if (typeof L.Routing !== 'undefined') {
                                     routingControl = L.Routing.control({
                                         waypoints: [
@@ -296,10 +289,10 @@
                                     console.warn('Librería Leaflet Routing Machine no cargada.');
                                 }
                             },
-                            function(error) { // Callback de error
+                            function(error) {
                                 alert("No se pudo obtener tu ubicación: " + error.message);
                             },
-                            { // Opciones
+                            {
                                 enableHighAccuracy: true,
                                 timeout: 10000,
                                 maximumAge: 0
@@ -308,12 +301,9 @@
                     } else {
                         alert("Geolocalización no soportada por este navegador.");
                     }
-                } // Cierre de loadUserLocation
-
-                // Ejecutar al inicio
+                }
                 loadUserLocation();
 
-                // Event Listener condicional (Solo si el usuario está logueado)
                 @auth
                     const reloadBtn = document.getElementById('reloadLocation');
                     if (reloadBtn) {
@@ -321,6 +311,6 @@
                     }
                 @endauth
 
-            }); // <--- ¡IMPORTANTE! Este cierre faltaba o estaba mal ubicado en tu archivo original.
+            });
         </script>
 </div>
