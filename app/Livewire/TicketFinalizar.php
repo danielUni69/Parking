@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire;
 
 use App\Models\Espacio;
@@ -31,8 +30,10 @@ class TicketFinalizar extends Component
         if (!$this->ticket) {
             return;
         }
+
         $this->tarifaBase = $this->espacio->tipoEspacio->tarifa_hora ?? 0;
         $this->tarifaNocturna = $this->tarifaBase + 2; // +2 Bs desde 18:00
+
         $inicio = Carbon::parse($this->ticket->horaIngreso)->setTimezone('America/La_Paz');
         $fin = now()->setTimezone('America/La_Paz');
         $totalMinutos = $inicio->diffInMinutes($fin);
@@ -40,6 +41,7 @@ class TicketFinalizar extends Component
         if ($this->horas < 1) {
             $this->horas = 1;
         }
+
         $this->monto = $this->calcularMontoConTarifaVariable($inicio, $fin, $this->horas);
         $this->minutos = $totalMinutos;
         $this->dispatch("abrir-modal-finalizar");
@@ -58,18 +60,14 @@ class TicketFinalizar extends Component
 
         for ($i = 0; $i < $horasTotales; $i++) {
             $horaDelDia = $horaActual->hour;
-
             $esNocturno = ($horaDelDia >= $inicioTarifaNocturna || $horaDelDia < $finTarifaNocturna);
-
             $tarifaHora = $esNocturno ? $this->tarifaNocturna : $this->tarifaBase;
             $montoTotal += $tarifaHora;
-
             if ($esNocturno) {
                 $this->desgloseHoras["nocturnas"]++;
             } else {
                 $this->desgloseHoras["normales"]++;
             }
-
             $horaActual->addHour();
         }
 
@@ -89,12 +87,14 @@ class TicketFinalizar extends Component
                 "estado" => "finalizado",
                 "costo_total" => $this->monto,
             ]);
+
             $pagoCreado = Pago::create([
                 "monto" => $this->monto,
                 "fecha" => now(),
                 "ticket_id" => $this->ticket->id,
                 "metodo" => "efectivo",
             ]);
+
             $this->espacio->update(["estado" => "libre"]);
             $this->dispatch("ticketFinalizado");
             $this->dispatch("cerrar-modal-finalizar");
@@ -103,35 +103,36 @@ class TicketFinalizar extends Component
         if (!$pagoCreado) {
             return;
         }
+
         $pagoCreado->load([
             "ticket" => function ($query) {
                 $query->with(["espacio.tipoEspacio"]);
             },
         ]);
+
         $minutosReales = Carbon::parse($pagoCreado->ticket->horaIngreso)
             ->diffInMinutes($pagoCreado->ticket->horaSalida);
         $horasCobro = ceil($minutosReales / 60);
+
         $data = [
-            "pago" => $pagoCreado,
-            "ticket" => $pagoCreado->ticket,
             "espacio" => $pagoCreado->ticket->espacio,
-            "tipoEspacio" => $pagoCreado->ticket->espacio->tipoEspacio,
-            "horasCobro" => $horasCobro,
-            "minutosReales" => $minutosReales,
+            "ticket" => $pagoCreado->ticket,
+            "tarifaBase" => $this->tarifaBase,
+            "tarifaNocturna" => $this->tarifaNocturna,
+            "desgloseHoras" => $this->desgloseHoras,
+            "monto" => $this->monto,
+            "horas" => $horasCobro,
+            "minutos" => $minutosReales,
         ];
-        $pdf = Pdf::loadView("pdf.ticket-pdf", $data)
+
+        $pdf = Pdf::loadView("tickets.ticket-pdf", $data)
             ->setPaper([0, 0, 320.77, 600], "portrait")
             ->setOptions([
                 "isHtml5ParserEnabled" => true,
                 "isRemoteEnabled" => true,
             ]);
 
-        $nombreArchivo =
-            "ticket-pago-" .
-            $pagoCreado->id .
-            "-" .
-            now()->format("YmdHis") .
-            ".pdf";
+        $nombreArchivo = "ticket-pago-" . $pagoCreado->id . "-" . now()->format("YmdHis") . ".pdf";
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();

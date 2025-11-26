@@ -84,7 +84,7 @@ class ReportesPagos extends Component
     {
         // Total de ingresos (solo tickets pagados)
         $totalIngresos = $this->registros
-            ->where("estado", "pagado")
+            ->where("estado", "finalizado")
             ->sum(function ($ticket) {
                 return $ticket->pago ? $ticket->pago->monto : 0;
             });

@@ -139,7 +139,7 @@
     <div class="ticket-container">
 
         <div class="header">
-            <img src="{{ public_path('img/logoN.png') }}" alt="Logo JEMITA">
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/logoN.png'))) }}" alt="Logo JEMITA">
             <h2>ESTACIONAMIENTO JEMITA</h2>
             <p>TICKET DE SALIDA</p>
             <p>{{ now()->setTimezone('America/La_Paz')->format('d/m/Y H:i') }}</p>
@@ -169,7 +169,7 @@
             <div>
                 <span>Tiempo:</span>
                 <span>
-                    {{ floor($horas) }} horas 
+                    {{ floor($horas) }} horas
                     ({{ floor($minutos) }} min)
                 </span>
             </div>

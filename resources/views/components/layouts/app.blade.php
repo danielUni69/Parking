@@ -36,7 +36,7 @@
                     <img src="{{ asset('img/logo.png') }}" alt="Logo JEMITA" class="h-full w-auto">
                 </div>
                 <div>
-                    <h1 class="text-lg font-medium gold-text">Estacionamiento M&M</h1>
+                    <h1 class="text-lg font-medium gold-text">Estacionamiento JEMITA</h1>
                     <p class="text-xs text-gray-400">Sistema de Gestión</p>
                 </div>
             </div>
@@ -96,8 +96,8 @@
                         <i class="fas fa-parking w-4 text-yellow-500"></i>
                         <span class="text-sm">Parking</span>
                     </a>
-
-                    <div class="dropdown relative group">
+                     @if(Auth::user()->tipo_usuario_id == 1)
+                        <div class="dropdown relative group">
                         <button class="nav-item flex items-center space-x-2 px-4 py-3 text-gray-200 rounded-t-lg w-full h-full cursor-pointer focus:outline-none
                             {{ request()->routeIs('reportes.*') || request()->routeIs('reportes.*') ? 'active' : '' }}">
                             <i class="fas fa-cogs w-4 text-yellow-500"></i>
@@ -119,6 +119,8 @@
                         <i class="fas fa-parking w-4 text-yellow-500"></i>
                         <span class="text-sm">Users</span>
                     </a>
+                    @endif
+
                 </div>
             </div>
         </nav>
